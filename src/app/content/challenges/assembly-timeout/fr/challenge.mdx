@@ -71,7 +71,7 @@ call sol_get_clock_sysvar
 ldxdw r1, [r1+0x0000]
 ```
 
-L'appel système `sol_get_clock_sysvar` écrit les données actuelles de `Clock` dans `r1`. 
+L'appel système `sol_get_clock_sysvar` écrit les données `Clock` actuelles à l'adresse mémoire spécifiée dans `r1`.
 
 Comme la structure Clock fait 40 octets (trop grande pour les registres qui ne contiennent que 8 octets chacun), nous utilisons la pile pour un stockage rapide sans allocation avec nettoyage automatique.
 
