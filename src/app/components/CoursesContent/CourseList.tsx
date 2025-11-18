@@ -330,7 +330,7 @@ export default function CourseList({
                           );
                         })}
                       </div>
-                      <div className="pt-4 pb-12 relative w-full">
+                      {/* <div className="pt-4 pb-12 relative w-full">
                         {languageCourses.length > 4 && (
                           <Button
                             variant="tertiary"
@@ -342,7 +342,7 @@ export default function CourseList({
                           ></Button>
                         )}
                         <Divider />
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 );
