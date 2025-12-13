@@ -16,6 +16,7 @@ import { Banner, Dropdown, Input, Tabs } from "@blueshift-gg/ui-components";
 import { useWindowSize } from "usehooks-ts";
 import { CourseLanguages } from "@/app/utils/course";
 import { PaginationButton } from "@blueshift-gg/ui-components/Pagination";
+import { recommendChallenges } from "@/app/utils/recommendations";
 
 const challengeSections = {
   Anchor: {
@@ -349,17 +350,28 @@ export default function ChallengesList({
     }
   );
 
-  const featuredChallenges = useMemo(() => {
-    return initialChallenges
-      .filter((c) => c.isFeatured)
-      .slice(0, 3)
-      .sort((a, b) => {
-        const statusOrder = { open: 0, completed: 1, claimed: 2 };
-        const aStatus = challengeStatuses[a.slug] || "open";
-        const bStatus = challengeStatuses[b.slug] || "open";
-        return statusOrder[aStatus] - statusOrder[bStatus];
-      });
-  }, [initialChallenges, challengeStatuses]);
+  const seed = useMemo(
+    () => new Date().toISOString().slice(0, 10),
+    []
+  );
+
+  const recommendedChallenges = useMemo(
+    () =>
+      recommendChallenges(initialChallenges, {
+        challengeStatuses,
+        preferredLanguages: selectedLanguages,
+        preferredDifficulties: selectedDifficulties,
+        seed,
+        limit: 3,
+      }),
+    [
+      initialChallenges,
+      challengeStatuses,
+      selectedLanguages,
+      selectedDifficulties,
+      seed,
+    ]
+  );
 
   const difficultyMap: Record<string, number> = {
     beginner: 1,
@@ -448,7 +460,7 @@ export default function ChallengesList({
       />
 
       {/* Get Started / Featured */}
-      {(isLoading || featuredChallenges.length > 0) && (
+      {(isLoading || recommendedChallenges.length > 0) && (
         <div className="relative flex flex-col border-x border-border-light p-1 pb-0 lg:pb-1">
           <Banner title={t("ChallengeCenter.get_started")} variant="brand" />
           <div className="px-1.5 py-3 sm:p-4">
@@ -462,7 +474,7 @@ export default function ChallengesList({
                 ? Array.from({ length: 3 }).map((_, index) => (
                     <ChallengeCardSkeleton />
                   ))
-                : featuredChallenges.map((challenge) => (
+                : recommendedChallenges.map((challenge) => (
                     <ChallengeCard
                       key={challenge.slug}
                       challenge={challenge}

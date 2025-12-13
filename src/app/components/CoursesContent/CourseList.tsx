@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  courseColors,
-  CourseMetadata,
-  CourseLanguages,
-} from "@/app/utils/course";
+import { CourseMetadata, CourseLanguages } from "@/app/utils/course";
 import {
   languageFilterMap,
   reverseLanguageFilterMap,
@@ -23,6 +19,7 @@ import { useWindowSize } from "usehooks-ts";
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Banner, Dropdown, Input, Tabs } from "@blueshift-gg/ui-components";
 import CourseCardSkeleton from "../CourseCard/CourseCardSkeleton";
+import { recommendCourses } from "@/app/utils/recommendations";
 
 type CoursesContentProps = {
   searchValue?: string;
@@ -75,7 +72,6 @@ export default function CourseList({
   const { width } = useWindowSize();
   const [isMobile, setIsMobile] = useState(false);
 
-  const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   const [scrollState, setScrollState] = useState({
     isAtStart: true,
     isAtEnd: false,
@@ -279,46 +275,30 @@ export default function CourseList({
 
   const dropdownItems = getCourseDropdownItems(isMobile);
 
-  // Helper function to check if a course is completed
-  const isCourseCompleted = (course: CourseMetadata) => {
-    const progress = courseProgress[course.slug] || 0;
-    const totalLessons = course.lessons.length;
-    if (progress !== totalLessons) return false;
+  const seed = useMemo(
+    () => new Date().toISOString().slice(0, 10),
+    []
+  );
 
-    // If course has a challenge, check if it's completed
-    if (course.challenge) {
-      const status = challengeStatuses[course.challenge];
-      return ["completed", "claimed"].includes(status);
-    }
-
-    return true;
-  };
-
-  // Get dynamic Get Started courses (exclude completed, show up to 3)
-  const getStartedCourses = useMemo(() => {
-    // First, get all featured courses that are not completed
-    const nonCompletedFeatured = initialCourses.filter(
-      (course) => course.isFeatured && !isCourseCompleted(course)
-    );
-
-    // If we have 3 or more non-completed featured courses, return first 3
-    if (nonCompletedFeatured.length >= 3) {
-      return nonCompletedFeatured.slice(0, 3);
-    }
-
-    // Otherwise, fill remaining slots with non-completed, non-featured courses
-    // that aren't already in the list
-    const featuredSlugs = new Set(nonCompletedFeatured.map((c) => c.slug));
-    const additionalCourses = initialCourses.filter(
-      (course) =>
-        !course.isFeatured &&
-        !isCourseCompleted(course) &&
-        !featuredSlugs.has(course.slug)
-    );
-
-    // Combine and return up to 3 courses
-    return [...nonCompletedFeatured, ...additionalCourses].slice(0, 3);
-  }, [initialCourses, courseProgress, challengeStatuses]);
+  const recommendedCourses = useMemo(
+    () =>
+      recommendCourses(initialCourses, {
+        courseProgress,
+        challengeStatuses,
+        preferredLanguages: selectedLanguages,
+        preferredDifficulties: selectedDifficulties,
+        seed,
+        limit: 3,
+      }),
+    [
+      initialCourses,
+      courseProgress,
+      challengeStatuses,
+      selectedLanguages,
+      selectedDifficulties,
+      seed,
+    ]
+  );
 
   // Create tabs array with conditional ordering
   const tabsItems = useMemo(() => {
@@ -372,7 +352,7 @@ export default function CourseList({
               ? Array.from({ length: 3 }).map((_, index) => (
                   <CourseCardSkeleton key={`featured-skeleton-${index}`} />
                 ))
-              : getStartedCourses.map((course) => {
+              : recommendedCourses.map((course) => {
                   const totalLessons =
                     courseLessons.find((c) => c.slug === course.slug)
                       ?.totalLessons || 0;

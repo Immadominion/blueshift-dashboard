@@ -8,6 +8,7 @@ import PathCard from "../PathCard/PathCard";
 import classNames from "classnames";
 import { getPathDropdownItems } from "@/app/utils/dropdownItems";
 import { useTranslations } from "next-intl";
+import { recommendPaths } from "@/app/utils/recommendations";
 import {
   Banner,
   Dropdown,
@@ -219,42 +220,30 @@ export default function PathList({
 
   const dropdownItems = getPathDropdownItems();
 
-  // Helper function to check if a path is completed
-  const isPathCompleted = (path: PathMetadata) => {
-    const completedSteps = getPathCompletedSteps(
-      path.steps,
+  const seed = useMemo(
+    () => new Date().toISOString().slice(0, 10),
+    []
+  );
+
+  const recommendedPaths = useMemo(
+    () =>
+      recommendPaths(initialPaths, {
+        courseProgress,
+        challengeStatuses,
+        preferredLanguages: selectedLanguages,
+        preferredDifficulties: selectedDifficulties,
+        seed,
+        limit: 3,
+      }),
+    [
+      initialPaths,
       courseProgress,
-      challengeStatuses
-    );
-    const totalSteps = path.steps.length;
-    return completedSteps === totalSteps;
-  };
-
-  // Get dynamic Get Started paths (exclude completed, show up to 3)
-  const getStartedPaths = useMemo(() => {
-    // First, get all featured paths that are not completed
-    const nonCompletedFeatured = initialPaths.filter(
-      (path) => path.isFeatured && !isPathCompleted(path)
-    );
-
-    // If we have 3 or more non-completed featured paths, return first 3
-    if (nonCompletedFeatured.length >= 3) {
-      return nonCompletedFeatured.slice(0, 3);
-    }
-
-    // Otherwise, fill remaining slots with non-completed, non-featured paths
-    // that aren't already in the list
-    const featuredSlugs = new Set(nonCompletedFeatured.map((p) => p.slug));
-    const additionalPaths = initialPaths.filter(
-      (path) =>
-        !path.isFeatured &&
-        !isPathCompleted(path) &&
-        !featuredSlugs.has(path.slug)
-    );
-
-    // Combine and return up to 3 paths
-    return [...nonCompletedFeatured, ...additionalPaths].slice(0, 3);
-  }, [initialPaths, courseProgress, challengeStatuses]);
+      challengeStatuses,
+      selectedLanguages,
+      selectedDifficulties,
+      seed,
+    ]
+  );
 
   // Create tabs array with conditional ordering
   const tabsItems = useMemo(() => {
@@ -340,7 +329,7 @@ export default function PathList({
               ? Array.from({ length: 3 }).map((_, index) => (
                   <PathCardSkeleton key={`featured-skeleton-${index}`} />
                 ))
-              : getStartedPaths.map((path) => {
+              : recommendedPaths.map((path) => {
                   const { courseCount, challengeCount } = getPathStats(path);
                   const completedSteps = getPathCompletedSteps(
                     path.steps,
