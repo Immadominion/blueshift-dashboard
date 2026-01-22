@@ -7,7 +7,7 @@ import { ArticleSection } from "../../../../../components/ArticleSection/Article
 
 <ArticleSection name="Beyond Standard Operations" id="beyond-standard-operations" level="h2" />
 
-Token transfers and NFT operations use well-known programs with standardized instructions. But Solana's power comes from custom programs—DeFi protocols, gaming systems, social networks, all running on-chain.
+Token transfers and NFT operations use well-known programs with standardized instructions. But Solana's power comes from custom programs: DeFi protocols, gaming systems, social networks, all running on-chain.
 
 Every Solana program follows the same pattern:
 1. Receive an instruction with accounts and data
@@ -59,7 +59,7 @@ Anchor programs use an 8-byte discriminator. Native programs vary.
 
 <ArticleSection name="Program Derived Addresses" id="program-derived-addresses" level="h2" />
 
-PDAs are addresses derived from seeds—no private key exists. Programs use them for data storage and authority.
+PDAs are addresses derived from seeds; no private key exists. Programs use them for data storage and authority.
 
 ```typescript
 import { PublicKey } from "@solana/web3.js";
@@ -491,4 +491,4 @@ try {
 - **Simulate first**: Catch errors before spending fees
 - **ALTs compress large transactions**: Use them when you hit size limits
 
-With these patterns, you can interact with any Solana program from mobile. The key is understanding the program's expected accounts and data format—usually documented in the IDL or program source.
+With these patterns, you can interact with any Solana program from mobile. The key is understanding the program's expected accounts and data format, usually documented in the IDL or program source.

@@ -2,7 +2,7 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 # Identity Verification
 
-When a wallet shows "My dApp wants to connect," how does it know the request actually came from "My dApp"? The MWA spec defines identity verification mechanisms that let wallets authenticate dApps—protecting users from phishing and impersonation.
+When a wallet shows "My dApp wants to connect," how does it know the request actually came from "My dApp"? The MWA spec defines identity verification mechanisms that let wallets authenticate dApps, protecting users from phishing and impersonation.
 
 <ArticleSection name="The Identity Problem" id="problem" level="h2" />
 
@@ -64,27 +64,27 @@ For native Android apps, Digital Asset Links (DAL) is the primary verification m
 ### Verification Flow
 
 ```
-┌─────────┐      ┌─────────┐      ┌──────────────────┐
-│  dApp   │      │ Wallet  │      │ myapp.com server │
-└────┬────┘      └────┬────┘      └────────┬─────────┘
-     │                │                     │
-     │ authorize      │                     │
-     │ uri: myapp.com │                     │
-     │───────────────►│                     │
-     │                │                     │
-     │                │ GET /.well-known/   │
-     │                │ assetlinks.json     │
-     │                │────────────────────►│
-     │                │                     │
-     │                │◄────────────────────│
-     │                │ [{ package, sig }]  │
-     │                │                     │
-     │                │ Check: request from │
-     │                │ com.example.myapp   │
-     │                │ with matching sig?  │
-     │                │                     │
-     │◄───────────────│                     │
-     │ Verified! ✓    │                     │
++---------+      +---------+      +------------------+
+|  dApp   |      | Wallet  |      | myapp.com server |
++----+----+      +----+----+      +--------+---------+
+     |                |                    |
+     | authorize      |                    |
+     | uri: myapp.com |                    |
+     |--------------->|                    |
+     |                |                    |
+     |                | GET /.well-known/  |
+     |                | assetlinks.json    |
+     |                |------------------->|
+     |                |                    |
+     |                |<-------------------|
+     |                | [{ package, sig }] |
+     |                |                    |
+     |                | Check: request from|
+     |                | com.example.myapp  |
+     |                | with matching sig? |
+     |                |                    |
+     |<---------------|                    |
+     | Verified!      |                    |
 ```
 
 ### Fingerprint Calculation
@@ -151,12 +151,12 @@ Web dApps connecting via reflector use domain-based verification.
 The reflector serves as an identity authority for web origins:
 
 ```
-┌───────────────┐     ┌────────────┐     ┌──────────┐
-│ Web dApp      │────►│ Reflector  │◄────│ Wallet   │
-│ mywebapp.com  │     │            │     │          │
-└───────────────┘     │ Verifies   │     │ Trusts   │
-                      │ origin     │     │ reflector│
-                      └────────────┘     └──────────┘
++---------------+     +------------+     +----------+
+| Web dApp      |---->| Reflector  |<----| Wallet   |
+| mywebapp.com  |     |            |     |          |
++---------------+     | Verifies   |     | Trusts   |
+                      | origin     |     | reflector|
+                      +------------+     +----------+
 ```
 
 The wallet must trust the reflector. A malicious reflector could lie about origins.
@@ -172,33 +172,33 @@ Wallets display verification status to users:
 ### Verified dApp
 
 ```
-┌────────────────────────────────────┐
-│  ✓ Verified: Magic Eden           │
-│  magiceden.io                      │
-│                                    │
-│  This app's identity has been      │
-│  cryptographically verified.       │
-│                                    │
-│  [Accounts to authorize]           │
-│                                    │
-│  [Approve]         [Decline]       │
-└────────────────────────────────────┘
++------------------------------------+
+|  [check] Verified: Magic Eden      |
+|  magiceden.io                      |
+|                                    |
+|  This app's identity has been      |
+|  cryptographically verified.       |
+|                                    |
+|  [Accounts to authorize]           |
+|                                    |
+|  [Approve]         [Decline]       |
++------------------------------------+
 ```
 
 ### Unverified dApp
 
 ```
-┌────────────────────────────────────┐
-│  ⚠ Unverified: Some dApp          │
-│  claims: example.com               │
-│                                    │
-│  This app's identity could not     │
-│  be verified. Proceed with caution.│
-│                                    │
-│  [Accounts to authorize]           │
-│                                    │
-│  [Approve Anyway]    [Decline]     │
-└────────────────────────────────────┘
++------------------------------------+
+|  [!] Unverified: Some dApp         |
+|  claims: example.com               |
+|                                    |
+|  This app's identity could not     |
+|  be verified. Proceed with caution.|
+|                                    |
+|  [Accounts to authorize]           |
+|                                    |
+|  [Approve Anyway]    [Decline]     |
++------------------------------------+
 ```
 
 Some wallets may refuse unverified connections entirely.
@@ -355,7 +355,7 @@ For high-security scenarios, wallets may re-verify periodically.
 **"Verification failed: network error"**
 - The wallet couldn't reach your server
 - Check server availability
-- Some wallets cache results—try clearing cache
+- Some wallets cache results; try clearing cache
 
 ### Testing Without Production Server
 

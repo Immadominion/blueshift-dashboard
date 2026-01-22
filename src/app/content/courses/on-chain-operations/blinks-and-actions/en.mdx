@@ -1,6 +1,6 @@
 ---
 title: "Blinks and Actions"
-description: "Build mobile experiences using Solana Actions—HTTP APIs that return ready-to-sign transactions. No SDKs required."
+description: "Build mobile experiences using Solana Actions: HTTP APIs that return ready-to-sign transactions. No SDKs required."
 ---
 
 import { ArticleSection } from "../../../../../components/ArticleSection/ArticleSection";
@@ -374,7 +374,7 @@ You just need to provide a `BlinkAdapter` that connects to your wallet.
 
 Consider what L0STE shared:
 
-> "Most of the UX is read-only, so once you know what is the wallet of the user (and you can let them sign a message with deeplink) you don't need any wallet component inside. Just store the wallet address. Then if the user needs an action just send them to Phantom or Solflare."
+> "Most of the UX is read-only, so once you know what is the wallet of the user (and you can let them sign a message) you don't need any wallet component inside. Just store the wallet address. Then if the user needs an action just send them to Phantom or Solflare."
 
 For some apps, you don't need embedded wallets at all:
 
@@ -510,11 +510,11 @@ This tells wallets and Blink renderers which URLs on your domain are valid Actio
 
 <ArticleSection name="Key Takeaways" id="key-takeaways" level="h2" />
 
-- **Actions are HTTP APIs** that return transactions—no SDKs required
+- **Actions are HTTP APIs** that return transactions; no SDKs required
 - **GET for metadata**, POST for transactions
-- **Always update blockhash** before signing—API responses might be stale
+- **Always update blockhash** before signing; API responses might be stale
 - **Check the registry** for trusted actions
 - **Action chaining** enables multi-step flows
 - **Consider the minimal approach**: store address, let wallet apps handle signing
 
-In the next lesson, we'll cover program interaction—building custom transactions that call any on-chain program.
+In the next lesson, we'll cover program interaction: building custom transactions that call any on-chain program.

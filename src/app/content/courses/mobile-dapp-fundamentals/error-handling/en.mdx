@@ -8,7 +8,7 @@ Mobile wallet connections fail in ways desktop apps never see. The wallet app mi
 
 Robust error handling separates production dApps from demos. This lesson gives you patterns for every failure mode in MWA.
 
-> Don't catch errors and show generic messages. MWA errors tell you exactly what happened—use that information.
+> Don't catch errors and show generic messages. MWA errors tell you exactly what happened: use that information.
 
 <ArticleSection name="MWA Error Types" id="error-types" level="h2" />
 
@@ -38,9 +38,9 @@ MWA defines specific error codes. The SDK wraps protocol errors in JSON-RPC form
 | -32601 | `ERROR_JSON_RPC_METHOD_NOT_FOUND` | Unknown method called | Check method name |
 | -32602 | `ERROR_JSON_RPC_INVALID_PARAMS` | Invalid parameters | Check param types |
 | -32603 | `ERROR_JSON_RPC_INTERNAL` | Wallet internal error | Try again |
-| -32000 | `ERROR_AUTHORIZATION_FAILED` | Auth denied by user | User cancelled—respect it |
+| -32000 | `ERROR_AUTHORIZATION_FAILED` | Auth denied by user | User cancelled. Respect it |
 | -32001 | `ERROR_INVALID_PAYLOADS` | Bad transaction format | Check transaction building |
-| -32002 | `ERROR_NOT_SIGNED` | User declined to sign | User cancelled—respect it |
+| -32002 | `ERROR_NOT_SIGNED` | User declined to sign | User cancelled. Respect it |
 | -32003 | `ERROR_NOT_SUBMITTED` | Wallet couldn't submit | Check network, retry |
 | -32004 | `ERROR_NOT_CLONED` | Clone failed (deprecated) | Rare, retry |
 | -32005 | `ERROR_TOO_MANY_PAYLOADS` | Too many transactions | Batch in smaller groups |

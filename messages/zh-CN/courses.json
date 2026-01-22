@@ -227,7 +227,7 @@
         "conclusion": "总结"
       }
     },
-    "mobile-wallet-adapter": {
+    "mobile-dapp-fundamentals": {
       "title": "移动钱包适配器",
       "description": "使用移动钱包适配器协议构建原生Solana移动dApp。掌握钱包连接、交易签名和React Native集成。",
       "lessons": {

@@ -39,27 +39,33 @@ src/
 
 <ArticleSection name="The Main App" id="app" level="h2" />
 
+The app entry point wraps everything in the necessary providers. We use `react-native-safe-area-context` for proper safe area handling across different devices.
+
+> **Important:** Install the safe area context package before proceeding: `npx expo install react-native-safe-area-context`
+
 ```typescript
 // App.tsx
-import 'react-native-get-random-values';
-import '@craftzdog/react-native-buffer';
+import './src/polyfills'; // Load polyfills first
 
 import React from 'react';
-import { SafeAreaView, StyleSheet, StatusBar } from 'react-native';
-import { ConnectionProvider } from './providers/ConnectionProvider';
-import { AuthorizationProvider } from './providers/AuthorizationProvider';
-import { SendScreen } from './screens/SendScreen';
+import { StyleSheet, StatusBar } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { ConnectionProvider } from './src/providers/ConnectionProvider';
+import { AuthorizationProvider } from './src/providers/AuthorizationProvider';
+import { SendScreen } from './src/screens/SendScreen';
 
 export default function App() {
   return (
-    <ConnectionProvider>
-      <AuthorizationProvider>
-        <SafeAreaView style={styles.container}>
-          <StatusBar barStyle="light-content" />
-          <SendScreen />
-        </SafeAreaView>
-      </AuthorizationProvider>
-    </ConnectionProvider>
+    <SafeAreaProvider>
+      <ConnectionProvider>
+        <AuthorizationProvider>
+          <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="light-content" />
+            <SendScreen />
+          </SafeAreaView>
+        </AuthorizationProvider>
+      </ConnectionProvider>
+    </SafeAreaProvider>
   );
 }
 
@@ -72,6 +78,8 @@ const styles = StyleSheet.create({
 ```
 
 <ArticleSection name="Balance Hook" id="balance-hook" level="h2" />
+
+This hook fetches the connected wallet's SOL balance and refreshes it periodically.
 
 ```typescript
 // hooks/useBalance.ts

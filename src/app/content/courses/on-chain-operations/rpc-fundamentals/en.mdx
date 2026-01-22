@@ -7,15 +7,15 @@ import { ArticleSection } from "../../../../../components/ArticleSection/Article
 
 <ArticleSection name="The Mobile RPC Challenge" id="the-mobile-rpc-challenge" level="h2" />
 
-Mobile apps don't connect to Solana directly. They speak to RPC nodes—intermediaries that accept your JSON requests and relay them to validators. On desktop browsers, RPC calls feel instant. On mobile, every millisecond matters. Network latency, cellular connections, and battery constraints change how you think about RPC.
+Mobile apps don't connect to Solana directly. They speak to RPC nodes: intermediaries that accept your JSON requests and relay them to validators. On desktop browsers, RPC calls feel instant. On mobile, every millisecond matters. Network latency, cellular connections, and battery constraints change how you think about RPC.
 
 > "RPC quality really matters. A good RPC setup forwards transactions quickly, handles load and retries, and stays well connected to the network."
 
-The Solana network produces blocks roughly every 400 milliseconds. Your mobile app needs to fetch blockhashes, submit transactions, and confirm results—all while the user might be on a spotty 4G connection.
+The Solana network produces blocks roughly every 400 milliseconds. Your mobile app needs to fetch blockhashes, submit transactions, and confirm results, all while the user might be on a spotty 4G connection.
 
 <ArticleSection name="Setting Up Connection" id="setting-up-connection" level="h2" />
 
-The `@solana/web3.js` library provides the `Connection` class—your gateway to Solana's JSON-RPC API.
+The `@solana/web3.js` library provides the `Connection` class: your gateway to Solana's JSON-RPC API.
 
 ```typescript
 import { Connection, clusterApiUrl } from "@solana/web3.js";
@@ -101,7 +101,7 @@ tokenAccounts.value.forEach((account) => {
 
 ### Getting the Latest Blockhash
 
-Every transaction needs a recent blockhash—it acts as a timestamp and prevents replay attacks:
+Every transaction needs a recent blockhash; it acts as a timestamp and prevents replay attacks:
 
 ```typescript
 const { blockhash, lastValidBlockHeight } = 
@@ -269,7 +269,7 @@ WebSockets on mobile can be tricky:
 
 1. **Background state**: iOS/Android may kill WebSocket connections when the app backgrounds
 2. **Reconnection**: Build in automatic reconnection logic
-3. **Battery**: Long-running subscriptions drain battery—use sparingly
+3. **Battery**: Long-running subscriptions drain battery; use sparingly
 
 ```typescript
 // React hook for managed subscription
@@ -326,11 +326,11 @@ try {
 
 <ArticleSection name="Key Takeaways" id="key-takeaways" level="h2" />
 
-- **Batch requests** when possible—every round trip costs time on mobile
+- **Batch requests** when possible; every round trip costs time on mobile
 - **Use `confirmed` commitment** for the speed/reliability balance
 - **Add polyfills** before importing `@solana/web3.js`
 - **Choose a dedicated RPC provider** for production
 - **Build retry logic** into all network operations
 - **Clean up subscriptions** to prevent memory leaks and battery drain
 
-In the next lesson, we'll use these RPC fundamentals to build actual transactions—starting with token transfers.
+In the next lesson, we'll use these RPC fundamentals to build actual transactions: starting with token transfers.

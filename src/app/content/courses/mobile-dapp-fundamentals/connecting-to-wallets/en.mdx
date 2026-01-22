@@ -6,9 +6,11 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 The `transact()` function looks deceptively simple. It takes a callback, opens a wallet, runs your code, and closes the session. One function, one callback, done.
 
-But understanding what happens inside that callback—and what guarantees it provides—is the key to building professional mobile dApps that don't frustrate users with cryptic errors or stuck states.
+But understanding what happens inside that callback, and what guarantees it provides, is the key to building professional mobile dApps that don't frustrate users with cryptic errors or stuck states.
 
 > Every call to `transact()` is self-contained. The wallet launches, you do your work, the wallet returns control. There's no persistent connection to manage or monitor.
+
+In this lesson, you'll build the wallet connection logic. By the end, you'll have a working `ConnectButton` component that authorizes with any MWA-compatible wallet.
 
 <ArticleSection name="The transact Pattern" id="transact-pattern" level="h2" />
 
@@ -170,7 +172,7 @@ async function connectWithCachedToken(): Promise<PublicKey | null> {
 }
 ```
 
-When a valid token is provided, the wallet may skip the user approval dialog entirely—the session authorizes silently.
+When a valid token is provided, the wallet may skip the user approval dialog entirely; the session authorizes silently.
 
 **Important:** Auth tokens are opaque strings. Their format varies by wallet. Never parse or modify them; just store and pass them.
 
@@ -195,11 +197,11 @@ The response tells you:
 - **supported_transaction_versions**: `['legacy', 0]` or similar
 - **features**: Optional features like `solana:signInWithSolana`, `solana:cloneAuthorization`
 
-This is a non-privileged method—you don't need to authorize first.
+This is a non-privileged method; you don't need to authorize first.
 
 <ArticleSection name="Deauthorizing" id="deauthorizing" level="h2" />
 
-To "disconnect" a wallet—invalidating any cached auth tokens—use `deauthorize`:
+To "disconnect" a wallet, invalidating any cached auth tokens, use `deauthorize`:
 
 ```typescript
 async function disconnect(): Promise<void> {
@@ -217,7 +219,7 @@ async function disconnect(): Promise<void> {
 
 After deauthorization, the token is invalidated wallet-side. Even if you try to use it later, it won't work.
 
-**Note:** This opens a session just to deauthorize. Some apps skip this and just clear local storage—the token becomes useless anyway when it expires. But explicit deauthorization is cleaner and faster for users who switch wallets frequently.
+**Note:** This opens a session just to deauthorize. Some apps skip this and just clear local storage. The token becomes useless anyway when it expires. But explicit deauthorization is cleaner and faster for users who switch wallets frequently.
 
 <ArticleSection name="Handling Multiple Accounts" id="multiple-accounts" level="h2" />
 
@@ -390,4 +392,4 @@ try {
 
 You can now connect to wallets, cache auth tokens for frictionless re-connection, and handle the common edge cases. But connecting is just the beginning.
 
-In the next lesson, we'll build and sign actual transactions—transferring SOL, working with versioned transactions, and handling the wallet's response.
+In the next lesson, we'll build and sign actual transactions: transferring SOL, working with versioned transactions, and handling the wallet's response.

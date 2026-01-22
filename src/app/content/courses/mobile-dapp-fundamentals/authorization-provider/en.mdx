@@ -6,11 +6,11 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 Every professional React Native dApp needs a state management pattern for wallet connections. Scattering `transact()` calls throughout your components leads to duplicated auth token handling, inconsistent error states, and components that don't know about each other's wallet actions.
 
-The AuthorizationProvider solves this. It's a React Context that owns all wallet state—connected accounts, auth tokens, and authorization functions—and makes them available to any component in your app.
+The AuthorizationProvider solves this. It's a React Context that owns all wallet state (connected accounts, auth tokens, and authorization functions) and makes them available to any component in your app.
 
 > The AuthorizationProvider pattern separates wallet management from business logic. Components request signatures without knowing how sessions work.
 
-> **MWA 2.0 Note**: If you're migrating from MWA 1.0, note that `reauthorize()` is deprecated. Use `authorize()` with an `auth_token` parameter instead—the wallet will silently reauthorize without prompting the user if the token is still valid.
+> **MWA 2.0 Note**: If you're migrating from MWA 1.0, note that `reauthorize()` is deprecated. Use `authorize()` with an `auth_token` parameter instead; the wallet will silently reauthorize without prompting the user if the token is still valid.
 
 <ArticleSection name="The Problem" id="the-problem" level="h2" />
 

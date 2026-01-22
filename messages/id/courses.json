@@ -227,7 +227,7 @@
         "conclusion": "Kesimpulan"
       }
     },
-    "mobile-wallet-adapter": {
+    "mobile-dapp-fundamentals": {
       "title": "Mobile Wallet Adapter",
       "description": "Bangun dApps Solana mobile native dengan protokol Mobile Wallet Adapter. Kuasai koneksi wallet, penandatanganan transaksi, dan integrasi React Native.",
       "lessons": {

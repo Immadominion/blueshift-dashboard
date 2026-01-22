@@ -4,13 +4,13 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![MWA Deep Dive](/graphics/course-banners/mwa-deep-dive.png)
 
-Browser extension wallets work because your dApp and wallet share the same execution context—the browser. Phantom's extension can inject itself into every page, intercept wallet requests, and respond directly. Simple, elegant, fragile.
+Browser extension wallets work because your dApp and wallet share the same execution context: the browser. Phantom's extension can inject itself into every page, intercept wallet requests, and respond directly. Simple, elegant, fragile.
 
 Mobile breaks this model completely. Your React Native app runs in its own sandbox. The wallet app runs in another. No shared memory. No injected scripts. No common window object. The operating system enforces strict isolation between applications.
 
 Mobile Wallet Adapter is the protocol that bridges this gap.
 
-> MWA defines how two completely isolated applications—your dApp and a wallet—can establish a secure channel, negotiate authorization, and exchange signed transactions.
+> MWA defines how two completely isolated applications, your dApp and a wallet, can establish a secure channel, negotiate authorization, and exchange signed transactions.
 
 <ArticleSection name="Three-Layer Architecture" id="three-layers" level="h2" />
 
@@ -23,16 +23,16 @@ The MWA protocol operates across three distinct layers:
 **RPC Layer**: What operations the wallet exposes. Once a secure session exists, the dApp sends JSON-RPC requests (`authorize`, `sign_and_send_transactions`, `sign_messages`) and receives responses. This is the layer most developers interact with.
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                   RPC Layer                         │
-│  authorize, sign_and_send_transactions, etc.        │
-├─────────────────────────────────────────────────────┤
-│                 Session Layer                       │
-│  ECDH key exchange, AES-GCM encryption              │
-├─────────────────────────────────────────────────────┤
-│                Transport Layer                      │
-│  WebSocket (local or via reflector)                 │
-└─────────────────────────────────────────────────────┘
++-----------------------------------------------------+
+|                   RPC Layer                         |
+|  authorize, sign_and_send_transactions, etc.        |
++-----------------------------------------------------+
+|                 Session Layer                       |
+|  ECDH key exchange, AES-GCM encryption              |
++-----------------------------------------------------+
+|                Transport Layer                      |
+|  WebSocket (local or via reflector)                 |
++-----------------------------------------------------+
 ```
 
 <ArticleSection name="Endpoints and Roles" id="endpoints" level="h2" />
@@ -44,13 +44,13 @@ The spec defines two roles:
 **Wallet Endpoint**: The wallet app (Phantom, Solflare, etc.). It accepts connections, presents authorization UI to users, signs transactions, and returns results. In the Transport layer, it acts as the WebSocket server (locally) or connects to the same reflector. The wallet endpoint is always the *responder*.
 
 ```
-┌─────────────────┐                      ┌─────────────────┐
-│   dApp Endpoint │                      │ Wallet Endpoint │
-│   (your app)    │◄────────────────────►│   (Phantom)     │
-│                 │    MWA Protocol      │                 │
-│   - initiator   │                      │   - responder   │
-│   - WS client   │                      │   - WS server   │
-└─────────────────┘                      └─────────────────┘
++-----------------+                      +-----------------+
+|  dApp Endpoint  |                      | Wallet Endpoint |
+|   (your app)    |<-------------------->|   (Phantom)     |
+|                 |    MWA Protocol      |                 |
+|   - initiator   |                      |   - responder   |
+|   - WS client   |                      |   - WS server   |
++-----------------+                      +-----------------+
 ```
 
 <ArticleSection name="The Association Token" id="association-token" level="h2" />
@@ -84,11 +84,11 @@ Three reasons:
 
 **Integrity protection**: Encryption (specifically authenticated encryption with AES-GCM) ensures messages can't be tampered with in transit. A modified transaction would fail authentication.
 
-**Protocol uniformity**: The same encryption scheme works for both local and remote connections. Remote connections route through a reflector server—a third party that explicitly should *not* see plaintext. By encrypting always, the protocol doesn't need special cases.
+**Protocol uniformity**: The same encryption scheme works for both local and remote connections. Remote connections route through a reflector server, a third party that explicitly should *not* see plaintext. By encrypting always, the protocol doesn't need special cases.
 
 <ArticleSection name="The Reflector's Role" id="reflector" level="h2" />
 
-For remote connections—where the dApp runs on a laptop and the wallet on a phone—direct communication isn't possible. MWA uses a *reflector* server as an intermediary.
+For remote connections, where the dApp runs on a laptop and the wallet on a phone, direct communication isn't possible. MWA uses a *reflector* server as an intermediary.
 
 The reflector is intentionally simple and untrusted:
 
@@ -96,14 +96,14 @@ The reflector is intentionally simple and untrusted:
 2. This ID is encoded into a QR code that the wallet scans
 3. The wallet connects to `wss://<reflector>/reflect?id=<ID>`
 4. The reflector begins forwarding messages between them
-5. All forwarded messages are encrypted—the reflector sees only ciphertext
+5. All forwarded messages are encrypted; the reflector sees only ciphertext
 
 ```
-┌──────────┐      ┌────────────┐      ┌──────────┐
-│   dApp   │─────►│  Reflector │◄─────│  Wallet  │
-│ (laptop) │      │  (server)  │      │ (phone)  │
-└──────────┘      └────────────┘      └──────────┘
-                        │
++----------+      +------------+      +----------+
+|   dApp   |----->|  Reflector |<-----|  Wallet  |
+| (laptop) |      |  (server)  |      | (phone)  |
++----------+      +------------+      +----------+
+                        |
                   Can't read
                   message content
 ```
@@ -148,7 +148,7 @@ The ephemeral session model is MWA's most distinctive feature. Other protocols m
 
 <ArticleSection name="Why This Course Exists" id="why-course" level="h2" />
 
-Most dApp developers only need Course 1—practical integration patterns. But some scenarios demand deeper understanding:
+Most dApp developers only need Course 1: practical integration patterns. But some scenarios demand deeper understanding:
 
 - **Debugging**: When sessions fail mysteriously, knowing the handshake helps isolate the problem
 - **Wallet Development**: Building a wallet requires implementing the server side
@@ -157,4 +157,4 @@ Most dApp developers only need Course 1—practical integration patterns. But so
 
 This course takes you through the spec layer by layer. By the end, you'll be able to read the [official specification](https://solana-mobile.github.io/mobile-wallet-adapter/spec/spec.html) fluently and trace issues from user-facing symptoms to protocol-level causes.
 
-We start in the next lesson with the transport layer—how bytes actually move between apps.
+We start in the next lesson with the transport layer: how bytes actually move between apps.

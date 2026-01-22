@@ -13,7 +13,7 @@ An NFT on Solana is a token with specific properties:
 - **0 decimals**: Can't have 0.5 of an NFT
 - **No mint authority**: Can't create more
 
-What makes NFTs *useful* is the metadata—the name, image, attributes, and collection information. This metadata lives in a separate account managed by the Token Metadata program.
+What makes NFTs *useful* is the metadata: the name, image, attributes, and collection information. This metadata lives in a separate account managed by the Token Metadata program.
 
 ```
 Mint Account (Supply=1, Decimals=0)
@@ -283,7 +283,7 @@ async function transferNft(
 
 <ArticleSection name="Compressed NFTs" id="compressed-nfts" level="h2" />
 
-Compressed NFTs (cNFTs) use state compression—they're stored in Merkle trees, not individual accounts. This makes them 1000x cheaper to mint but requires different handling.
+Compressed NFTs (cNFTs) use state compression; they're stored in Merkle trees, not individual accounts. This makes them 1000x cheaper to mint but requires different handling.
 
 ### Identifying Compressed NFTs
 
@@ -334,7 +334,7 @@ async function transferCompressedNft(
 
 ### Listing for Sale
 
-Most apps don't build their own marketplace—they integrate with existing ones:
+Most apps don't build their own marketplace; they integrate with existing ones:
 
 ```typescript
 // Open Magic Eden listing page
@@ -503,10 +503,10 @@ function TransferConfirmation({ nft, recipient, onConfirm, onCancel }) {
 
 <ArticleSection name="Key Takeaways" id="key-takeaways" level="h2" />
 
-- **Use DAS API** for fetching NFTs—it handles both regular and compressed NFTs
+- **Use DAS API** for fetching NFTs; it handles both regular and compressed NFTs
 - **Fix image URIs** before displaying (IPFS, Arweave gateways)
-- **Compressed NFTs need proofs**—transfers require Merkle proof data
+- **Compressed NFTs need proofs**; transfers require Merkle proof data
 - **Consider marketplace APIs** for buying/selling instead of building your own
-- **Always confirm transfers**—NFTs are often valuable
+- **Always confirm transfers**; NFTs are often valuable
 
-Next, we'll explore Blinks and Actions—how to get ready-to-sign transactions from HTTP APIs.
+Next, we'll explore Blinks and Actions: how to get ready-to-sign transactions from HTTP APIs.

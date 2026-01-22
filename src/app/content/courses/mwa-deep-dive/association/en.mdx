@@ -2,7 +2,7 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 # Association
 
-Before a session can exist, the wallet needs to know where to connect and how to verify the dApp's identity. This is the *association* phase—the dApp communicates connection parameters to the wallet through a URI.
+Before a session can exist, the wallet needs to know where to connect and how to verify the dApp's identity. This is the *association* phase: the dApp communicates connection parameters to the wallet through a URI.
 
 <ArticleSection name="Association URI Structure" id="uri-structure" level="h2" />
 
@@ -50,7 +50,7 @@ solana-wallet:/v1/associate/remote?association=<TOKEN>&id=<ID>&reflector=<HOST>
 ```
 
 Parameters:
-- `association`: Same as local—the association public key
+- `association`: Same as local. The association public key
 - `id`: The base64url-encoded reflector ID (obtained from `REFLECTOR_ID` message)
 - `reflector`: The hostname and optional port of the reflector server
 
@@ -166,7 +166,7 @@ For better UX, dApps can:
 2. **Use wallet-specific URIs**: Some wallets register additional schemes (e.g., `phantom-wallet:`) for direct invocation
 3. **Let the user configure**: Provide settings where users pick their default wallet
 
-The SDK doesn't automatically remember wallet choice—that's left to the dApp implementation.
+The SDK doesn't automatically remember wallet choice. That's left to the dApp implementation.
 
 <ArticleSection name="Endpoint-Specific URIs" id="endpoint-uris" level="h2" />
 
@@ -221,7 +221,7 @@ Association provides several security properties:
 
 ### Freshness
 
-Each association uses a new keypair. Even if an attacker captures an old association URI, they can't use it—the dApp that generated it is no longer listening, and the private key has been discarded.
+Each association uses a new keypair. Even if an attacker captures an old association URI, they can't use it; the dApp that generated it is no longer listening, and the private key has been discarded.
 
 ### Authentication Binding
 
@@ -229,7 +229,7 @@ The association public key binds the session to the original association. During
 
 ### No Replay
 
-The association token is a public key, not a signature. It doesn't "replay" anything—it's a fresh identifier for this specific session attempt.
+The association token is a public key, not a signature. It doesn't "replay" anything; it's a fresh identifier for this specific session attempt.
 
 ### Limitations
 
@@ -315,6 +315,6 @@ This pattern enables any web browser to connect to a mobile wallet.
 
 Desktop apps could use local networking (for a wallet app on the same machine) or remote association (for a phone wallet).
 
-The association URI format remains consistent—only the mechanism for delivering the URI to the wallet changes.
+The association URI format remains consistent. Only the mechanism for delivering the URI to the wallet changes.
 
-In the next lesson, we dive into session establishment—where the cryptographic handshake happens and the secure channel is created.
+In the next lesson, we dive into session establishment: where the cryptographic handshake happens and the secure channel is created.

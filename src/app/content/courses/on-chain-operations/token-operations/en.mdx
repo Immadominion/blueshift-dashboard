@@ -246,7 +246,7 @@ async function createTokenAccountIfNeeded(
 Creating an ATA costs ~0.002 SOL (rent exemption). In a transfer to a new recipient:
 
 1. You might pay to create their token account
-2. This is often expected in apps—good UX
+2. This is often expected in apps, good UX
 3. Consider showing users this cost before confirming
 
 ```typescript
@@ -410,6 +410,6 @@ try {
 - **Decimals matter**: USDC is 6 decimals, SOL is 9. Always convert properly.
 - **ATA creation costs SOL**: Factor this into UX when sending to new recipients.
 - **Check the token program**: Token-2022 mints need the right program ID.
-- **Show progress**: Token operations have multiple steps—keep users informed.
+- **Show progress**: Token operations have multiple steps; keep users informed.
 
-Next, we'll build on these patterns to handle NFTs—tokens with supply of 1 and rich metadata.
+Next, we'll build on these patterns to handle NFTs: tokens with supply of 1 and rich metadata.
