@@ -4,11 +4,13 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![Signing Transactions](/graphics/course-banners/mobile-wallet-adapter.png)
 
-The moment of truth in any dApp: getting a user to sign a transaction. On mobile, this happens in the wallet app—but your code stays in control. You build the transaction, the wallet signs it, and either the wallet or your app broadcasts it to the network.
+The moment of truth in any dApp: getting a user to sign a transaction. On mobile, this happens in the wallet app, but your code stays in control. You build the transaction, the wallet signs it, and either the wallet or your app broadcasts it to the network.
 
 MWA provides two paths: sign-and-send (wallet handles everything) or sign-only (you handle submission). Most apps should use sign-and-send, but understanding both gives you flexibility for advanced use cases.
 
-> `signAndSendTransactions` is the preferred method. The wallet handles RPC submission, retry logic, and confirmation—reducing failure modes in your app.
+> `signAndSendTransactions` is the preferred method. The wallet handles RPC submission, retry logic, and confirmation, reducing failure modes in your app.
+
+In this lesson, you'll create utility functions for building transactions and a `useSendSol` hook that handles the complete send flow.
 
 <ArticleSection name="Building Transactions" id="building-transactions" level="h2" />
 
@@ -187,7 +189,7 @@ const signatures = await wallet.signAndSendTransactions({
 });
 ```
 
-The `waitForCommitmentToSendNextTransaction` option is important for batches—it ensures each transaction confirms before sending the next, preventing nonce/blockhash issues.
+The `waitForCommitmentToSendNextTransaction` option is important for batches; it ensures each transaction confirms before sending the next, preventing nonce/blockhash issues.
 
 <ArticleSection name="Sign Only" id="sign-only" level="h2" />
 
@@ -493,4 +495,4 @@ if (signature) {
 }
 ```
 
-In the next lesson, we'll explore message signing—authentication, off-chain attestations, and Sign In With Solana.
+In the next lesson, we'll explore message signing: authentication, off-chain attestations, and Sign In With Solana.

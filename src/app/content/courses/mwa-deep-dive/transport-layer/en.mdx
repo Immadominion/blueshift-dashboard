@@ -10,7 +10,7 @@ Any MWA transport must guarantee:
 
 **Full-Duplex**: Both apps can send messages simultaneously. The wallet might need to push notifications while the dApp is still sending requests.
 
-**Message-Oriented**: Bytes arrive as discrete messages, not a continuous stream. The transport preserves message boundaries—when the dApp sends a 100-byte message, the wallet receives exactly 100 bytes as one unit.
+**Message-Oriented**: Bytes arrive as discrete messages, not a continuous stream. The transport preserves message boundaries. When the dApp sends a 100-byte message, the wallet receives exactly 100 bytes as one unit.
 
 **Reliable, Ordered Delivery**: Messages arrive in the order sent, without corruption. TCP provides this; raw Bluetooth doesn't (so MWA over Bluetooth would need to add it).
 
@@ -58,23 +58,23 @@ const ws = new WebSocket(uri, [
 The connection follows this sequence:
 
 ```
-┌──────────┐                           ┌──────────┐
-│   dApp   │                           │  Wallet  │
-└────┬─────┘                           └────┬─────┘
-     │                                      │
-     │  Intent: solana-wallet:/v1/...       │
-     │─────────────────────────────────────►│
-     │                                      │
-     │               (Wallet starts WS server on port)
-     │                                      │
-     │  WebSocket connect to 127.0.0.1:port │
-     │─────────────────────────────────────►│
-     │                                      │
-     │  WebSocket handshake (subprotocol)   │
-     │◄─────────────────────────────────────│
-     │                                      │
-     │  (Transport established)             │
-     │                                      │
++----------+                           +----------+
+|   dApp   |                           |  Wallet  |
++----+-----+                           +----+-----+
+     |                                      |
+     |  Intent: solana-wallet:/v1/...       |
+     |------------------------------------->|
+     |                                      |
+     |               (Wallet starts WS server on port)
+     |                                      |
+     |  WebSocket connect to 127.0.0.1:port |
+     |------------------------------------->|
+     |                                      |
+     |  WebSocket handshake (subprotocol)   |
+     |<-------------------------------------|
+     |                                      |
+     |  (Transport established)             |
+     |                                      |
 ```
 
 ### Timing Constraints
@@ -112,7 +112,7 @@ For remote connections, both endpoints connect to a reflector:
 wss://<reflector-host>/reflect
 ```
 
-The protocol has specific message types. Note that messages in this protocol don't use type byte prefixes—instead, the message format and context determine the meaning:
+The protocol has specific message types. Note that messages in this protocol don't use type byte prefixes; instead, the message format and context determine the meaning:
 
 ### Reflector-to-dApp Messages
 
@@ -122,7 +122,7 @@ The protocol has specific message types. Note that messages in this protocol don
 
 ### Message Forwarding
 
-Once both clients are connected and `APP_PING` has been sent, the reflector enters forwarding mode. Every message from one client is **forwarded directly** to the other—no prefix or wrapper is added.
+Once both clients are connected and `APP_PING` has been sent, the reflector enters forwarding mode. Every message from one client is **forwarded directly** to the other. No prefix or wrapper is added.
 
 ```
 dApp sends: [HELLO_REQ bytes]
@@ -177,7 +177,7 @@ The state machine transitions:
 
 The dApp chooses the port. Why? Because:
 
-1. The dApp initiates—it knows when it needs a wallet session
+1. The dApp initiates; it knows when it needs a wallet session
 2. The dApp can retry with different ports if one is occupied
 3. The Intent system doesn't have a return channel for the wallet to communicate a port
 
@@ -194,17 +194,17 @@ WebSocket handles framing, so MWA doesn't need length prefixes. But messages do 
 
 **Unencrypted messages** (during session establishment):
 ```
-┌─────────────────────────────────────────┐
-│  Message Type (1 byte)  │  Payload      │
-└─────────────────────────────────────────┘
++-----------------------------------------+
+|  Message Type (1 byte)  |  Payload      |
++-----------------------------------------+
 ```
 
 **Encrypted messages** (after session establishment):
 ```
-┌──────────────────────────────────────────────────────┐
-│  Sequence Number (4 bytes)  │  AES-GCM Ciphertext   │
-│       (big-endian)          │  (includes auth tag)  │
-└──────────────────────────────────────────────────────┘
++------------------------------------------------------+
+|  Sequence Number (4 bytes)  |  AES-GCM Ciphertext   |
+|       (big-endian)          |  (includes auth tag)  |
++------------------------------------------------------+
 ```
 
 The sequence number prevents replay attacks. Each side maintains their own counter, incrementing with each message sent.
@@ -228,7 +228,7 @@ Common transport-level problems:
 - On reflector connections, network issues
 - The wallet UI is blocking (user hasn't interacted)
 
-**"Invalid subprotocol"**: The wallet accepted the connection but didn't agree on a subprotocol. This indicates a version mismatch—the wallet might be running an older MWA implementation.
+**"Invalid subprotocol"**: The wallet accepted the connection but didn't agree on a subprotocol. This indicates a version mismatch. The wallet might be running an older MWA implementation.
 
 <ArticleSection name="Transport Security Considerations" id="security" level="h2" />
 
@@ -243,4 +243,4 @@ Real security comes from the session layer. Transport security assumptions:
 2. The reflector connection uses TLS to prevent eavesdropping on ciphertext
 3. All message content is encrypted regardless of transport
 
-In the next lesson, we examine the association mechanism—how the dApp tells the wallet where to connect and proves its identity.
+In the next lesson, we examine the association mechanism: how the dApp tells the wallet where to connect and proves its identity.

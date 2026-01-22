@@ -4,17 +4,19 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![Signing Messages](/graphics/course-banners/mobile-wallet-adapter.png)
 
-Not every interaction needs a transaction. Sometimes you just need to prove that a user controls a wallet—without writing anything to the blockchain or spending lamports.
+Not every interaction needs a transaction. Sometimes you just need to prove that a user controls a wallet, without writing anything to the blockchain or spending lamports.
 
 Message signing enables authentication flows, off-chain attestations, and cryptographic proofs of ownership. Sign In With Solana (SIWS) standardizes this for web3 login, replacing email/password with wallet signatures.
 
 > Message signatures prove wallet ownership without touching the blockchain. They're free, instant, and verifiable by anyone.
 
+In this lesson, you'll create a `useSignMessage` hook and learn how to implement Sign In With Solana for authentication.
+
 <ArticleSection name="How Message Signing Works" id="how-it-works" level="h2" />
 
 When you sign a transaction, you're authorizing a state change on Solana. When you sign a message, you're creating a cryptographic proof that says "this wallet approved this exact content."
 
-The signature is deterministic: the same wallet signing the same message will always produce the same signature. Anyone with the public key can verify the signature was made by the corresponding private key—without ever seeing that private key.
+The signature is deterministic: the same wallet signing the same message will always produce the same signature. Anyone with the public key can verify the signature was made by the corresponding private key, without ever seeing that private key.
 
 ```
 Message + Private Key → Signature
@@ -177,7 +179,7 @@ type SignInPayload = {
 };
 ```
 
-The `nonce` is critical—it prevents replay attacks. Your server generates a unique nonce, the user signs it, and your server verifies the signature includes that exact nonce.
+The `nonce` is critical; it prevents replay attacks. Your server generates a unique nonce, the user signs it, and your server verifies the signature includes that exact nonce.
 
 <ArticleSection name="Backend Verification" id="backend-verification" level="h2" />
 

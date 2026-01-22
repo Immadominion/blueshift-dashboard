@@ -4,9 +4,9 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![Environment Setup](/graphics/course-banners/mobile-wallet-adapter.png)
 
-In the next twenty minutes, you'll have a React Native project ready to connect to any Solana mobile wallet. No dApp browser required, no wallet extension needed—just native app-to-app communication.
+In the next twenty minutes, you'll have a React Native project ready to connect to any Solana mobile wallet. No dApp browser required, no wallet extension needed. Just native app-to-app communication.
 
-Getting Solana development working in React Native requires some careful setup. The Solana JavaScript libraries assume a Node.js environment with crypto APIs that don't exist in React Native. We need to provide polyfills—shims that implement these missing APIs.
+Getting Solana development working in React Native requires some careful setup. The Solana JavaScript libraries assume a Node.js environment with crypto APIs that don't exist in React Native. We need to provide polyfills, which are shims that implement these missing APIs.
 
 > The most common error in mobile Solana development is `crypto.getRandomValues is not a function`. This lesson ensures you never see it.
 
@@ -34,7 +34,7 @@ npm install
 
 ### Starting from Scratch
 
-If you prefer to build from a blank slate—or need to add MWA to an existing project—here's the manual approach.
+If you prefer to build from a blank slate, or need to add MWA to an existing project, here's the manual approach.
 
 Create a new Expo project:
 
@@ -50,7 +50,15 @@ npm install @solana-mobile/mobile-wallet-adapter-protocol-web3js \
             @solana-mobile/mobile-wallet-adapter-protocol \
             @solana/web3.js \
             react-native-get-random-values \
-            @craftzdog/react-native-buffer
+            @craftzdog/react-native-buffer \
+            react-native-quick-base64 \
+            @react-native-async-storage/async-storage
+```
+
+Then install the safe area context for proper layout handling:
+
+```bash
+npx expo install react-native-safe-area-context
 ```
 
 **Note:** We use `@craftzdog/react-native-buffer` rather than the Node.js buffer package. This package is optimized for React Native and works correctly with Expo.
@@ -59,11 +67,12 @@ npm install @solana-mobile/mobile-wallet-adapter-protocol-web3js \
 
 React Native's JavaScript runtime lacks several APIs that `@solana/web3.js` expects:
 
-- `crypto.getRandomValues()` — for generating keypairs
-- `Buffer` — for byte array manipulation
-- `TextEncoder/TextDecoder` — for string/byte conversion
+- `crypto.getRandomValues()`: for generating keypairs
+- `Buffer`: for byte array manipulation
 
 These must be polyfilled **before** any Solana code runs. Order matters critically here.
+
+> **Note:** `TextEncoder/TextDecoder` are now included natively in Hermes (React Native's JS engine), so you don't need to polyfill them anymore.
 
 ### The Polyfill File
 
@@ -75,15 +84,10 @@ import 'react-native-get-random-values';
 import { Buffer } from '@craftzdog/react-native-buffer';
 
 // Make Buffer globally available
+// Type assertion needed: @craftzdog/react-native-buffer is API-compatible
+// but has a different TypeScript signature than Node's BufferConstructor
 if (typeof global.Buffer === 'undefined') {
-  global.Buffer = Buffer;
-}
-
-// Polyfill TextEncoder/TextDecoder if missing
-if (typeof global.TextEncoder === 'undefined') {
-  const { TextEncoder, TextDecoder } = require('text-encoding');
-  global.TextEncoder = TextEncoder;
-  global.TextDecoder = TextDecoder;
+  global.Buffer = Buffer as unknown as typeof global.Buffer;
 }
 ```
 
@@ -172,7 +176,7 @@ Here's something that trips up many developers: **Expo Go cannot run MWA apps**.
 
 Expo Go is the app you download from the app store that runs Expo projects instantly. It's great for quick development, but it bundles its own JavaScript runtime without the native modules MWA needs.
 
-For Mobile Wallet Adapter, you need a **Development Build**—a custom version of Expo that includes the native code your app requires.
+For Mobile Wallet Adapter, you need a **Development Build**: a custom version of Expo that includes the native code your app requires.
 
 ### Creating a Development Build
 
@@ -200,7 +204,7 @@ For testing on a physical device:
 4. Run `adb devices` to verify connection
 5. Run `npx expo run:android`
 
-The development build installs on your device and connects to Metro for live reload—similar to Expo Go, but with native module support.
+The development build installs on your device and connects to Metro for live reload, similar to Expo Go, but with native module support.
 
 <ArticleSection name="Project Structure" id="project-structure" level="h2" />
 
@@ -255,7 +259,7 @@ export const MAINNET_RPC = 'https://api.mainnet-beta.solana.com';
 export const MAINNET_CLUSTER = 'solana:mainnet' as const;
 ```
 
-The `APP_IDENTITY` object appears in wallet authorization prompts. Use a real domain that you control—wallets may verify ownership.
+The `APP_IDENTITY` object appears in wallet authorization prompts. Use a real domain that you control. Wallets may verify ownership.
 
 <ArticleSection name="Common Setup Issues" id="common-issues" level="h2" />
 
@@ -268,7 +272,7 @@ The polyfill isn't loading before Solana code runs. Check:
 
 ### `Buffer is not defined`
 
-Similar cause—Buffer polyfill not available globally. Ensure:
+Similar cause: the Buffer polyfill isn't available globally. Ensure:
 1. Your polyfill file sets `global.Buffer = Buffer`
 2. The polyfill runs before any code that uses Buffer
 
@@ -280,6 +284,33 @@ You're probably running in Expo Go instead of a development build. MWA requires 
 # Stop Expo Go and build a dev client
 npx expo run:android
 ```
+
+### SDK location not found
+
+When running `npx expo run:android` for the first time, you may see:
+
+```
+SDK location not found. Define a valid SDK location with an 
+ANDROID_HOME environment variable or by setting the sdk.dir 
+path in your project's local properties file
+```
+
+Expo prebuild generates the `android/` folder but doesn't auto-create `local.properties`. Create it manually:
+
+```bash
+# android/local.properties
+sdk.dir=/Users/YOUR_USERNAME/Library/Android/sdk
+```
+
+Or set `ANDROID_HOME` in your shell profile (`~/.zshrc` or `~/.bashrc`):
+
+```bash
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+```
+
+This file is gitignored by default, so each developer sets their own SDK path.
 
 ### Metro bundler caching old code
 

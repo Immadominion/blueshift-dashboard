@@ -9,10 +9,10 @@ This final lesson covers two critical topics: the reflector protocol for remote 
 The reflector enables dApps on one device (laptop, desktop) to connect to wallets on another (phone). It's a WebSocket relay server that forwards encrypted messages between endpoints.
 
 ```
-┌───────────────┐        ┌────────────────┐        ┌───────────────┐
-│  Web dApp     │───────►│  Reflector     │◄───────│  Mobile       │
-│  (laptop)     │   WSS  │  Server        │   WSS  │  Wallet       │
-└───────────────┘        └────────────────┘        └───────────────┘
++---------------+        +----------------+        +---------------+
+|  Web dApp     |------->|  Reflector     |<-------|  Mobile       |
+|  (laptop)     |   WSS  |  Server        |   WSS  |  Wallet       |
++---------------+        +----------------+        +---------------+
 ```
 
 ### Design Principles
@@ -26,7 +26,7 @@ The reflector is intentionally simple:
 
 <ArticleSection name="Reflector Protocol Messages" id="reflector-messages" level="h2" />
 
-The reflector uses a simple message format. Unlike some protocols, messages don't all have type prefixes—the format depends on context:
+The reflector uses a simple message format. Unlike some protocols, messages don't all have type prefixes; the format depends on context:
 
 ### Reflector-to-dApp Messages
 
@@ -37,20 +37,20 @@ The reflector uses a simple message format. Unlike some protocols, messages don'
 
 ### Message Formats
 
-**REFLECTOR_ID** (reflector → dApp):
+**REFLECTOR_ID** (reflector -> dApp):
 ```
-┌────────────────────────────────────────────────┐
-│  varint length  │  ID bytes (opaque)           │
-└────────────────────────────────────────────────┘
++------------------------------------------------+
+|  varint length  |  ID bytes (opaque)           |
++------------------------------------------------+
 ```
 
 The ID is an opaque byte sequence, base64url-encoded when placed in the association URI.
 
-**APP_PING** (reflector → both endpoints):
+**APP_PING** (reflector -> both endpoints):
 ```
-┌──────────────────────────────────────┐
-│  (empty message - 0 bytes)           │
-└──────────────────────────────────────┘
++--------------------------------------+
+|  (empty message - 0 bytes)           |
++--------------------------------------+
 ```
 
 Sent to both endpoints when the counterparty connects. The dApp should wait for this before sending `HELLO_REQ`.
@@ -69,41 +69,41 @@ Wallet receives: [encrypted message bytes]
 
 Complete flow for a remote connection:
 
-```
-Time │ dApp                    │ Reflector              │ Wallet
-─────┼─────────────────────────┼────────────────────────┼─────────────────
-t₀   │ Connect to              │                        │
-     │ wss://reflector/reflect │                        │
-     │────────────────────────►│                        │
-     │                         │                        │
-t₁   │◄────────────────────────│                        │
-     │ REFLECTOR_ID: <len><id> │                        │
-     │                         │                        │
-t₂   │ Generate QR code with:  │                        │
-     │ - association token     │                        │
-     │ - id=<base64url(id)>    │                        │
-     │ - reflector hostname    │                        │
-     │                         │                        │
-t₃   │                         │                        │ User scans QR
-     │                         │                        │
-t₄   │                         │◄───────────────────────│ Connect to
-     │                         │ wss://reflector/reflect│
-     │                         │ ?id=<base64url(id)>    │
-     │                         │                        │
-t₅   │◄────────────────────────│────────────────────────│
-     │ APP_PING (empty)        │ APP_PING (empty)       │
-     │                         │                        │
-t₆   │ Send HELLO_REQ          │                        │
-     │────────────────────────►│                        │
-     │                         │ Forward (transparent)  │
-     │                         │───────────────────────►│
-     │                         │                        │ Parse HELLO_REQ
-t₇   │                         │◄───────────────────────│ Send HELLO_RSP
-     │                         │ Forward (transparent)  │
-     │◄────────────────────────│                        │
-     │                         │                        │
-t₈   │ (Session established)   │                        │
-     │ (Encrypted from here)   │                        │
+```text
+Time  | dApp                    | Reflector               | Wallet
+------+-------------------------+-------------------------+------------------
+t0    | Connect to              |                         |
+      | wss://reflector/reflect |                         |
+      |------------------------>|                         |
+      |                         |                         |
+t1    |<------------------------|                         |
+      | REFLECTOR_ID: <len><id> |                         |
+      |                         |                         |
+t2    | Generate QR code with:  |                         |
+      | - association token     |                         |
+      | - id=<base64url(id)>    |                         |
+      | - reflector hostname    |                         |
+      |                         |                         |
+t3    |                         |                         | User scans QR
+      |                         |                         |
+t4    |                         |<------------------------|  Connect to
+      |                         | wss://reflector/reflect |
+      |                         | ?id=<base64url(id)>     |
+      |                         |                         |
+t5    |<------------------------|------------------------>|
+      | APP_PING (empty)        | APP_PING (empty)        |
+      |                         |                         |
+t6    | Send HELLO_REQ          |                         |
+      |------------------------>|                         |
+      |                         | Forward (transparent)   |
+      |                         |------------------------>|
+      |                         |                         | Parse HELLO_REQ
+t7    |                         |<------------------------|  Send HELLO_RSP
+      |                         | Forward (transparent)   |
+      |<------------------------|                         |
+      |                         |                         |
+t8    | (Session established)   |                         |
+      | (Encrypted from here)   |                         |
 ```
 
 <ArticleSection name="Reflector Timeouts" id="reflector-timeouts" level="h2" />
@@ -164,7 +164,7 @@ function WalletConnectQR({ uri }: { uri: string }) {
 
 ### Security Considerations
 
-- The QR code contains the association public key—keep it visible only to the intended user
+- The QR code contains the association public key; keep it visible only to the intended user
 - The reflector ID is not secret but helps pair the connection
 - Anyone who scans the QR can attempt to connect (race condition possible)
 
@@ -214,23 +214,23 @@ When something goes wrong, systematic debugging helps isolate the issue.
 ### Debug Layers
 
 ```
-┌─────────────────────────────────────────┐
-│ 4. Application Layer                    │ ← Your dApp code
-│    - Transaction construction           │
-│    - Response handling                  │
-├─────────────────────────────────────────┤
-│ 3. RPC Layer                            │ ← JSON-RPC methods
-│    - Method parameters                  │
-│    - Error codes                        │
-├─────────────────────────────────────────┤
-│ 2. Session Layer                        │ ← Encryption, keys
-│    - Handshake success                  │
-│    - Decrypt/encrypt                    │
-├─────────────────────────────────────────┤
-│ 1. Transport Layer                      │ ← WebSocket, reflector
-│    - Connection establishment           │
-│    - Message delivery                   │
-└─────────────────────────────────────────┘
++-----------------------------------------+
+| 4. Application Layer                    | <- Your dApp code
+|    - Transaction construction           |
+|    - Response handling                  |
++-----------------------------------------+
+| 3. RPC Layer                            | <- JSON-RPC methods
+|    - Method parameters                  |
+|    - Error codes                        |
++-----------------------------------------+
+| 2. Session Layer                        | <- Encryption, keys
+|    - Handshake success                  |
+|    - Decrypt/encrypt                    |
++-----------------------------------------+
+| 1. Transport Layer                      | <- WebSocket, reflector
+|    - Connection establishment           |
+|    - Message delivery                   |
++-----------------------------------------+
 ```
 
 Debug from the bottom up: verify transport, then session, then RPC, then your application logic.

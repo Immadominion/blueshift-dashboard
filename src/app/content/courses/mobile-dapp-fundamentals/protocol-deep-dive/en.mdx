@@ -4,9 +4,9 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![MWA Protocol](/graphics/course-banners/mobile-wallet-adapter.png)
 
-The Mobile Wallet Adapter specification is one of the most elegant solutions in the Solana ecosystem. Understanding how it works under the hood will make you a better mobile developer—and help you debug the weird edge cases you'll inevitably encounter.
+The Mobile Wallet Adapter specification is one of the most elegant solutions in the Solana ecosystem. Understanding how it works under the hood will make you a better mobile developer, and help you debug the weird edge cases you'll inevitably encounter.
 
-Most developers never read protocol specs. They call `transact()`, it works, and they move on. But when a connection silently fails, when authorization times out, when a wallet doesn't respond—you need to understand the machinery.
+Most developers never read protocol specs. They call `transact()`, it works, and they move on. But when a connection silently fails, when authorization times out, when a wallet doesn't respond, you need to understand the machinery.
 
 > MWA establishes encrypted peer-to-peer channels using WebSockets, ECDH key exchange, and AES-GCM encryption. No plaintext ever crosses the wire, even on localhost.
 
@@ -15,13 +15,13 @@ Most developers never read protocol specs. They call `transact()`, it works, and
 When your dApp connects to a wallet, two apps on the same device establish a WebSocket connection:
 
 ```
-┌─────────────────┐                           ┌─────────────────┐
-│                 │      solana-wallet://     │                 │
-│   Your dApp     │ ────── URI intent ──────> │   Wallet App    │
-│   (Client)      │                           │   (Server)      │
-│                 │      ws://localhost       │                 │
-│                 │ <────── WebSocket ──────> │   :random_port  │
-└─────────────────┘                           └─────────────────┘
++-----------------+                           +-----------------+
+|                 |      solana-wallet://     |                 |
+|   Your dApp     | -------- URI intent ----> |   Wallet App    |
+|   (Client)      |                           |   (Server)      |
+|                 |      ws://localhost       |                 |
+|                 | <------ WebSocket ------> |   :random_port  |
++-----------------+                           +-----------------+
 ```
 
 Your dApp is always the client. The wallet app is always the server. This asymmetry is fundamental to the protocol.
@@ -34,7 +34,7 @@ When you call `transact()`, the SDK performs these steps before any WebSocket co
 
 ### Step 1: Generate an Association Keypair
 
-Your app generates an ephemeral P-256 EC keypair (not Ed25519 like Solana keys—this is for ECDH key exchange).
+Your app generates an ephemeral P-256 EC keypair (not Ed25519 like Solana keys; this is for ECDH key exchange).
 
 ```typescript
 // This happens inside the SDK automatically
@@ -57,11 +57,11 @@ solana-wallet:/v1/associate/local
 ```
 
 Breaking this down:
-- `solana-wallet:` — The URI scheme registered by MWA wallets
-- `/v1/associate/local` — Local connection (same device)
-- `association` — The base64url-encoded public key from Step 1
-- `port` — A random port (49152-65535) where your app will connect
-- `v=2` — Protocol version (MWA 2.0)
+- `solana-wallet:`: The URI scheme registered by MWA wallets
+- `/v1/associate/local`: Local connection (same device)
+- `association`: The base64url-encoded public key from Step 1
+- `port`: A random port (49152-65535) where your app will connect
+- `v=2`: Protocol version (MWA 2.0)
 
 ### Step 3: Launch the Wallet
 
@@ -94,7 +94,7 @@ If the wallet isn't ready yet, the connection fails. The SDK retries for up to 3
 
 <ArticleSection name="Session Establishment: The Handshake" id="session-establishment" level="h2" />
 
-Once the WebSocket connects, the real cryptographic magic begins. Both parties need to establish a shared secret for encrypting all further communication—without ever sending that secret over the wire.
+Once the WebSocket connects, the real cryptographic magic begins. Both parties need to establish a shared secret for encrypting all further communication, without ever sending that secret over the wire.
 
 ### The ECDH Key Exchange
 
@@ -126,8 +126,8 @@ Qd || Signature(Qd, association_private_key)
 ```
 
 Where:
-- `Qd` — X9.62-encoded ECDH public key (65 bytes)
-- `Signature` — ECDSA-SHA256 proof that this comes from the same app that created the association URI
+- `Qd`: X9.62-encoded ECDH public key (65 bytes)
+- `Signature`: ECDSA-SHA256 proof that this comes from the same app that created the association URI
 
 The wallet verifies the signature using the association token (public key) from the URI. This prevents man-in-the-middle attacks: only the app that generated the original URI can complete the handshake.
 
@@ -173,9 +173,9 @@ They still cannot decrypt past or future sessions. This is forward secrecy at wo
 After the handshake, all JSON-RPC messages are encrypted with AES-128-GCM. Each message has this structure:
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│ Sequence (4 bytes) │ IV (12 bytes) │ Ciphertext │ Tag (16 bytes) │
-└──────────────────────────────────────────────────────────────┘
++--------------------------------------------------------------+
+| Sequence (4 bytes) | IV (12 bytes) | Ciphertext | Tag (16 bytes) |
++--------------------------------------------------------------+
 ```
 
 - **Sequence Number**: Monotonically increasing counter (prevents replay attacks)
@@ -320,7 +320,7 @@ MWA uses JSON-RPC error codes. Knowing these helps you write better error handli
 | -32002 | Too Many Requests | Rate limited |
 | 4001 | User Rejected | User declined the request |
 
-The most common error you'll handle is `4001`—the user pressed "Cancel" or "Reject" in the wallet UI.
+The most common error you'll handle is `4001`: the user pressed "Cancel" or "Reject" in the wallet UI.
 
 <ArticleSection name="Session Lifecycle" id="session-lifecycle" level="h2" />
 
@@ -343,7 +343,7 @@ await transact(async (wallet) => {
 // Encryption keys discarded
 ```
 
-**Critical insight**: If your callback throws an error, the session still closes. If you need to retry something, you need a new `transact()` call—a new session entirely.
+**Critical insight**: If your callback throws an error, the session still closes. If you need to retry something, you need a new `transact()` call, which means a new session entirely.
 
 ```typescript
 // Wrong: trying to reuse a failed session

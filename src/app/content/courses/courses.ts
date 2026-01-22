@@ -310,7 +310,7 @@ export const courses: CourseMetadata[] = withCourseNumber([
     ],
   },
   {
-    slug: "mobile-wallet-adapter",
+    slug: "mobile-dapp-fundamentals",
     language: "Mobile",
     color: BRAND_COLOURS.general,
     difficulty: 1,
@@ -353,9 +353,9 @@ export const courses: CourseMetadata[] = withCourseNumber([
     isFeatured: true,
     lessons: [
       { slug: "introduction" },
-      { slug: "privy" },
-      { slug: "dynamic" },
-      { slug: "lazorkit" },
+      { slug: "mpc-cryptography" },
+      { slug: "passkeys-webauthn" },
+      { slug: "smart-wallet-architectures" },
       { slug: "choosing-implementation" },
     ],
   },

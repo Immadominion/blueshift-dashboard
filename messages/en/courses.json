@@ -247,7 +247,7 @@
         "conclusion": "Conclusion"
       }
     },
-    "mobile-wallet-adapter": {
+    "mobile-dapp-fundamentals": {
       "title": "Mobile dApp Fundamentals",
       "description": "Your introduction to Solana mobile development. Build native dApps with the Mobile Wallet Adapter protocol, master wallet connections, and React Native integration.",
       "lessons": {
@@ -278,14 +278,14 @@
       }
     },
     "embedded-wallets": {
-      "title": "Embedded Wallets - And UX",
-      "description": "Eliminate seed phrases with embedded wallets. Master Privy, Dynamic, LazorKit, and Para SDKs to build frictionless mobile authentication using passkeys, social login, and MPC.",
+      "title": "Embedded Wallets",
+      "description": "Eliminate seed phrases with embedded wallets. Understand MPC threshold signatures, passkey-native smart wallets, and modular signer architectures to choose the right approach for your application.",
       "lessons": {
         "introduction": "Introduction",
-        "privy": "Privy: Flexible Authentication",
-        "dynamic": "Dynamic: MPC and Wallet-as-a-Service",
-        "lazorkit": "LazorKit: Passkey Smart Wallets",
-        "choosing-implementation": "Choosing and Implementing Your Solution"
+        "mpc-cryptography": "Multi-Party Computation",
+        "passkeys-webauthn": "Passkeys and WebAuthn",
+        "smart-wallet-architectures": "Smart Wallet Architectures",
+        "choosing-implementation": "Choosing Your Approach"
       }
     },
     "on-chain-operations": {

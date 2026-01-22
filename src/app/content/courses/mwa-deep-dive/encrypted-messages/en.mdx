@@ -21,10 +21,10 @@ GCM is an *authenticated encryption with associated data* (AEAD) mode. It's effi
 Every encrypted message follows this format:
 
 ```
-┌────────────────────────────────────────────────────────────┐
-│  Sequence Number  │  IV  │  Ciphertext  │  Auth Tag        │
-│    (4 bytes)      │ (12) │   (variable) │   (16 bytes)     │
-└────────────────────────────────────────────────────────────┘
++------------------------------------------------------------+
+|  Sequence Number  |  IV  |  Ciphertext  |  Auth Tag        |
+|    (4 bytes)      | (12) |   (variable) |   (16 bytes)     |
++------------------------------------------------------------+
 ```
 
 **Sequence Number (4 bytes)**: Big-endian unsigned integer. Starts at 1 (not 0), increments with each message sent.
@@ -43,7 +43,7 @@ MWA uses the sequence number as Additional Authenticated Data (AAD) in the AES-G
 2. The sequence number **is authenticated** via the GCM tag
 3. Any tampering with the sequence number causes decryption to fail
 
-This design prevents an attacker from modifying the sequence number to cause replay or reordering attacks—the authentication tag verification will fail.
+This design prevents an attacker from modifying the sequence number to cause replay or reordering attacks; the authentication tag verification will fail.
 
 <ArticleSection name="Encryption Process" id="encryption" level="h2" />
 
@@ -135,22 +135,21 @@ Each endpoint maintains two counters:
 Both start at **1** after session establishment (not 0).
 
 ```
-┌─────────────────┐              ┌─────────────────┐
-│   dApp          │              │   Wallet        │
-│                 │              │                 │
-│ sendSeq = 1     │──── seq 1 ──►│ recvSeq = 1→2   │
-│ recvSeq = 1     │              │ sendSeq = 1     │
-│                 │              │                 │
-│ sendSeq = 1→2   │◄─── seq 1 ───│ sendSeq = 1→2   │
-│ recvSeq = 2     │              │ recvSeq = 2     │
-│                 │              │                 │
-│ sendSeq = 2→3   │──── seq 2 ──►│ recvSeq = 2→3   │
-└─────────────────┘              └─────────────────┘
+      dApp                              Wallet
+  +-----------+                    +--------------+
+  | sendSeq=1 |---- seq 1 -------->| recvSeq: 1->2|
+  | recvSeq=1 |                    | sendSeq=1    |
+  |           |                    |              |
+  | sendSeq=2 |<--- seq 1 ---------| sendSeq: 1->2|
+  | recvSeq=2 |                    | recvSeq=2    |
+  |           |                    |              |
+  | sendSeq=3 |---- seq 2 -------->| recvSeq: 2->3|
+  +-----------+                    +--------------+
 ```
 
 ### Why Sequence Numbers?
 
-**Replay attack prevention**: An attacker who captures a signed transaction response can't replay it—the sequence number won't match.
+**Replay attack prevention**: An attacker who captures a signed transaction response can't replay it; the sequence number won't match.
 
 **Out-of-order detection**: If messages arrive out of order (shouldn't happen with TCP, but defense in depth), they're rejected.
 
@@ -220,7 +219,7 @@ Or a response:
 }
 ```
 
-The encryption layer doesn't interpret these—it just encrypts/decrypts bytes.
+The encryption layer doesn't interpret these; it just encrypts/decrypts bytes.
 
 <ArticleSection name="Message Size Limits" id="size-limits" level="h2" />
 
@@ -246,7 +245,7 @@ The Web Crypto API throws an error if:
 - The auth tag doesn't match (message tampered or key mismatch)
 - The IV or ciphertext is malformed
 
-Response: Close the session. Don't try to recover—a decryption failure indicates a serious problem (key mismatch, corruption, or attack).
+Response: Close the session. Don't try to recover. A decryption failure indicates a serious problem (key mismatch, corruption, or attack).
 
 ### Sequence Mismatch
 
@@ -274,7 +273,7 @@ The encrypted message protocol provides:
 
 <ArticleSection name="What It Doesn't Provide" id="limitations" level="h2" />
 
-**Non-repudiation**: GCM is symmetric—both parties can create valid messages. You can't prove a message came from one specific party.
+**Non-repudiation**: GCM is symmetric; both parties can create valid messages. You can't prove a message came from one specific party.
 
 **Traffic Analysis Protection**: Message timing and sizes are visible to observers (on local transport) or the reflector (on remote transport).
 
@@ -354,7 +353,7 @@ console.log('Ciphertext length:', ciphertext.length);
 
 ### Common Mistakes
 
-1. **Reusing IV**: Each message must have a unique IV. Using the same IV twice with the same key is catastrophic—it allows XORing ciphertexts to recover plaintexts.
+1. **Reusing IV**: Each message must have a unique IV. Using the same IV twice with the same key is catastrophic; it allows XORing ciphertexts to recover plaintexts.
 
 2. **Wrong sequence number**: Incrementing before vs after sending can cause mismatch.
 
@@ -388,4 +387,4 @@ Key spec points:
 - 128-bit (16-byte) authentication tag
 - Session key from HKDF derivation
 
-In the next lesson, we examine the JSON-RPC methods available once the encrypted session is established—the actual operations your dApp can request from the wallet.
+In the next lesson, we examine the JSON-RPC methods available once the encrypted session is established: the actual operations your dApp can request from the wallet.

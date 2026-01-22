@@ -1,9 +1,8 @@
----
-title: "Session Establishment"
-description: "Learn how dApps and wallets establish secure communication channels through ECDH key exchange and cryptographic handshakes in Mobile Wallet Adapter."
----
+import { ArticleSection } from "../../../../components/ArticleSection/ArticleSection";
 
-import { ArticleSection } from "../../../../../components/ArticleSection/ArticleSection";
+# Session Establishment
+
+![MWA Deep Dive](/graphics/course-banners/mwa-deep-dive.png)
 
 <ArticleSection name="Overview" id="overview" level="h2" />
 
@@ -23,17 +22,17 @@ These are the only unencrypted protocol messages. Everything after is encrypted.
 The dApp sends `HELLO_REQ` immediately after the WebSocket connection is established:
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│  Qd (session public key)      │  Sa (signature)                  │
-│      (65 bytes)               │    (64 bytes)                    │
-└──────────────────────────────────────────────────────────────────┘
++------------------------------------------------------------------+
+|  Qd (session public key)      |  Sa (signature)                  |
+|      (65 bytes)               |    (64 bytes)                    |
++------------------------------------------------------------------+
 ```
 
 Total size: 129 bytes
 
 Components:
 
-**Qd (65 bytes)**: The dApp's *session* public key (P-256, uncompressed format). This is different from the association public key—the dApp generates two keypairs.
+**Qd (65 bytes)**: The dApp's *session* public key (P-256, uncompressed format). This is different from the association public key. The dApp generates two keypairs.
 
 **Sa (64 bytes)**: An ECDSA signature over Qd using the *association* private key. This proves the dApp controls the association key from the URI.
 
@@ -105,10 +104,10 @@ The SDK includes conversion functions because Web Crypto API returns DER format:
 The wallet responds with `HELLO_RSP`:
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│  Qw (wallet session key)      │  Session Props                   │
-│      (65 bytes)               │  (variable JSON)                 │
-└──────────────────────────────────────────────────────────────────┘
++------------------------------------------------------------------+
+|  Qw (wallet session key)      |  Session Props                   |
+|      (65 bytes)               |  (variable JSON)                 |
++------------------------------------------------------------------+
 ```
 
 Components:
@@ -128,7 +127,7 @@ Components:
 Notice the wallet doesn't sign `HELLO_RSP`. This is intentional:
 
 1. The dApp already trusts the wallet (the user installed it)
-2. The wallet proves knowledge of its private key during ECDH—if it has the wrong key, encryption fails
+2. The wallet proves knowledge of its private key during ECDH; if it has the wrong key, encryption fails
 3. Wallet identity verification (for UI purposes) happens at a higher layer via Digital Asset Links
 
 <ArticleSection name="Key Derivation" id="key-derivation" level="h2" />
@@ -161,7 +160,7 @@ session_key = HKDF-SHA256(
 )
 ```
 
-Note: There is no `info` parameter in this HKDF application—just IKM, salt, and the output length.
+Note: There is no `info` parameter in this HKDF application. Just IKM, salt, and the output length.
 
 <ArticleSection name="HKDF in Detail" id="hkdf-detail" level="h2" />
 
@@ -273,17 +272,17 @@ From this point, all messages are encrypted with AES-GCM using `sessionKey`.
 
 <ArticleSection name="Handshake Timing" id="timing" level="h2" />
 
-The handshake is fast—typically under 50ms on modern devices. Timing breakdown:
+The handshake is fast, typically under 50ms on modern devices. Timing breakdown:
 
 | Operation | Typical Time |
 |-----------|--------------|
 | Generate session keypair | 2-5ms |
 | Sign Qd with association key | 1-2ms |
-| Send HELLO_REQ | <1ms (local) |
+| Send HELLO_REQ | &lt;1ms (local) |
 | Wallet generate keypair | 2-5ms |
-| Wallet send HELLO_RSP | <1ms (local) |
+| Wallet send HELLO_RSP | &lt;1ms (local) |
 | ECDH derivation | 2-5ms |
-| HKDF derivation | <1ms |
+| HKDF derivation | &lt;1ms |
 
 Total: ~10-20ms on modern hardware.
 
@@ -414,7 +413,7 @@ The session establishment provides:
 
 **Key Binding**: HKDF with the association key as salt ensures the derived key is bound to this association.
 
-**No Replay**: Session keys are ephemeral. An attacker can't replay an old HELLO_REQ to establish a session—they'd need the current association private key.
+**No Replay**: Session keys are ephemeral. An attacker can't replay an old HELLO_REQ to establish a session; they'd need the current association private key.
 
 Limitations:
 
@@ -422,4 +421,4 @@ Limitations:
 
 **Side Channel Risks**: On compromised devices, private keys might be extractable from memory.
 
-In the next lesson, we examine how messages are encrypted after session establishment—the AES-GCM protocol and sequence number handling.
+In the next lesson, we examine how messages are encrypted after session establishment: the AES-GCM protocol and sequence number handling.

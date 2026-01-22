@@ -18,7 +18,7 @@ Mobile operating systems don't work this way. iOS and Android isolate apps from 
 
 This isolation creates a fundamental problem: how does your dApp ask a wallet app to sign something when they can't directly communicate?
 
-The answer is Mobile Wallet Adapter—a protocol that establishes encrypted communication channels between apps using the operating system's built-in inter-app messaging, combined with local WebSocket connections.
+The answer is Mobile Wallet Adapter, a protocol that establishes encrypted communication channels between apps using the operating system's built-in inter-app messaging, combined with local WebSocket connections.
 
 ### Key advantages
 
@@ -107,7 +107,7 @@ const authResult = await wallet.authorize({
 // - wallet_uri_base: for future direct connections
 ```
 
-The `identity` object is crucial. Wallets display this information to users so they know which app is requesting access. On Android, wallets can cryptographically verify that the request actually came from the app claiming this identity—not a malicious impersonator.
+The `identity` object is crucial. Wallets display this information to users so they know which app is requesting access. On Android, wallets can cryptographically verify that the request actually came from the app claiming this identity, not a malicious impersonator.
 
 ### Silent re-authorization
 
@@ -136,7 +136,7 @@ await transact(async (wallet) => {
 });
 ```
 
-Auth tokens are opaque strings—their format is wallet-specific. Your app just stores and passes them. If a token expires or becomes invalid, the wallet will prompt for fresh authorization.
+Auth tokens are opaque strings; their format is wallet-specific. Your app just stores and passes them. If a token expires or becomes invalid, the wallet will prompt for fresh authorization.
 
 <ArticleSection name="Signing Transactions" id="signing-transactions" level="h2" />
 
@@ -184,7 +184,7 @@ const signedTxs = await wallet.signTransactions({
 await connection.sendTransaction(signedTxs[0]);
 ```
 
-<ArticleSection name="What We're Building" id="what-were-building" level="h2" />
+<ArticleSection name="What To Expect" id="what-to-expect" level="h2" />
 
 This course teaches you to build production-ready React Native dApps with Mobile Wallet Adapter. By the end, you'll have:
 
@@ -193,8 +193,6 @@ This course teaches you to build production-ready React Native dApps with Mobile
 3. An AuthorizationProvider for managing wallet state across your app
 4. Error handling patterns for every failure mode
 5. A capstone app that sends tokens between wallets
-
-The code examples use real patterns from production apps—not simplified demos that break in edge cases. You'll learn not just *how* to use MWA, but *why* it works the way it does.
 
 ### Prerequisites
 

@@ -247,7 +247,7 @@
         "conclusion": "Kết luận"
       }
     },
-    "mobile-wallet-adapter": {
+    "mobile-dapp-fundamentals": {
       "title": "Mobile Wallet Adapter",
       "description": "Xây dựng dApps Solana mobile native với giao thức Mobile Wallet Adapter. Thành thạo kết nối ví, ký giao dịch và tích hợp React Native.",
       "lessons": {

@@ -227,7 +227,7 @@
         "conclusion": "Conclusion"
       }
     },
-    "mobile-wallet-adapter": {
+    "mobile-dapp-fundamentals": {
       "title": "Mobile Wallet Adapter",
       "description": "Créez des dApps Solana mobiles natives avec le protocole Mobile Wallet Adapter. Maîtrisez les connexions wallet, la signature de transactions et l'intégration React Native.",
       "lessons": {
