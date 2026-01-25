@@ -76,7 +76,7 @@ Version negotiation rules:
 
 <ArticleSection name="The Association Public Key" id="association-key" level="h2" />
 
-The association public key is critical to MWA security. Let's trace its generation and use:
+The association public key is critical to MWA security. Here's its generation and use:
 
 ### Generation
 
@@ -160,7 +160,7 @@ const result = await transact(async (wallet) => {
 
 When multiple MWA-compatible wallets are installed, Android shows a disambiguation dialog. The user selects which wallet to use.
 
-For better UX, dApps can:
+To reduce user friction from repeated wallet selection prompts, dApps can:
 
 1. **Remember the user's preference**: Store the chosen wallet package and use it for future connections
 2. **Use wallet-specific URIs**: Some wallets register additional schemes (e.g., `phantom-wallet:`) for direct invocation
@@ -194,7 +194,7 @@ This allows dApps to initiate remote connections with specific wallets without u
 
 <ArticleSection name="Association Flow Timeline" id="timeline" level="h2" />
 
-Let's trace a complete local association:
+Here's a complete local association trace:
 
 ```
 Time  │  dApp                          │  Wallet

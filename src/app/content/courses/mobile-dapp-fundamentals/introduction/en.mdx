@@ -4,11 +4,11 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![Mobile Wallet Adapter](/graphics/course-banners/mobile-wallet-adapter.png)
 
-If you've built Solana dApps with wallet-adapter, you know the drill: user clicks Connect, browser extension pops up, user approves. Simple. But try this on a phone, and you'll discover that everything you know about wallet connections is wrong.
+Web wallet connection follows a familiar pattern: user clicks Connect, browser extension pops up, user approves. The wallet extension injects itself into the page's JavaScript context, methods are called directly, state persists.
 
-There are no browser extensions on mobile. Users don't browse inside wallet dApp browsers. The familiar popup model doesn't translate to native apps. Mobile Wallet Adapter exists because the web model fundamentally cannot work on phones.
+Mobile breaks this model completely. Browser extensions don't exist. Apps run in isolated sandboxes with no shared memory. The popup model requires a different architecture. Mobile Wallet Adapter exists because the web approach fundamentally cannot work on phones.
 
-> MWA isn't a mobile port of wallet-adapter. It's an entirely different architecture where your app communicates directly with wallet apps through secure, ephemeral sessions.
+MWA is an entirely different architecture where your app communicates directly with wallet apps through secure, ephemeral sessions. Not a mobile port of wallet-adapter—a ground-up protocol designed for app sandbox constraints.
 
 <ArticleSection name="Why Mobile is Different" id="why-mobile-is-different" level="h2" />
 
@@ -20,11 +20,7 @@ This isolation creates a fundamental problem: how does your dApp ask a wallet ap
 
 The answer is Mobile Wallet Adapter, a protocol that establishes encrypted communication channels between apps using the operating system's built-in inter-app messaging, combined with local WebSocket connections.
 
-### Key advantages
-
-- **Native UX**: Users stay in their familiar wallet apps instead of embedded browser experiences
-- **Enhanced Security**: Private keys never leave the wallet app, not even temporarily
-- **Universal Compatibility**: One implementation works with any MWA-compliant wallet (Phantom, Solflare, and others)
+MWA provides native UX where users stay in their familiar wallet apps rather than embedded browser experiences. Private keys never leave the wallet app, not even temporarily. One implementation works with any MWA-compliant wallet—Phantom, Solflare, and others all speak the same protocol.
 
 <ArticleSection name="The Session Model" id="the-session-model" level="h2" />
 
@@ -46,11 +42,7 @@ Open Session → Authorize → Sign (one or more) → Close Session
 
 Every time your app needs the wallet, it opens a new session. Within that session, you can authorize (or re-authorize with a cached token) and request multiple signatures. When the session closes, the wallet may return to the background.
 
-This might seem inefficient, but it's actually elegant:
-
-1. **No stale connections**: You never have to handle "wallet disconnected unexpectedly"
-2. **Clear user intent**: Each session is an explicit user action
-3. **Battery efficient**: No persistent WebSocket draining power
+The session-per-interaction model avoids stale connections—you never handle "wallet disconnected unexpectedly" errors. Each session represents explicit user intent rather than background state that might desynchronize. Battery life improves because there's no persistent WebSocket connection draining power between interactions.
 
 <ArticleSection name="The transact Function" id="the-transact-function" level="h2" />
 
@@ -186,10 +178,10 @@ await connection.sendTransaction(signedTxs[0]);
 
 <ArticleSection name="What To Expect" id="what-to-expect" level="h2" />
 
-This course teaches you to build production-ready React Native dApps with Mobile Wallet Adapter. By the end, you'll have:
+This course builds production-ready React Native dApps with Mobile Wallet Adapter. You'll implement:
 
-1. A complete understanding of the MWA protocol and session lifecycle
-2. A working React Native project with proper polyfills and dependencies
+1. Complete MWA protocol integration with session lifecycle management
+2. A React Native project with proper polyfills and dependencies
 3. An AuthorizationProvider for managing wallet state across your app
 4. Error handling patterns for every failure mode
 5. A capstone app that sends tokens between wallets
@@ -207,7 +199,7 @@ This course teaches you to build production-ready React Native dApps with Mobile
 
 | Lesson | Topic |
 |--------|-------|
-| 1 | Introduction (you are here) |
+| 1 | **Introduction** |
 | 2 | Protocol Deep Dive: How MWA actually works |
 | 3 | Environment Setup: React Native with Solana |
 | 4 | Connecting to Wallets: The transact pattern |
@@ -218,4 +210,6 @@ This course teaches you to build production-ready React Native dApps with Mobile
 | 9 | Real Device Testing: Debug workflow |
 | 10 | Capstone: Token sender app |
 
-Let's begin by understanding exactly what happens when your app opens that wallet connection.
+Understanding these architectural differences explains every MWA API design choice. The ephemeral session model isn't a limitation—it's an elegant solution to mobile's security constraints. Every decision in the protocol, from ECDH key exchange to auth token caching, follows from the fundamental reality that mobile apps must communicate across sandboxes.
+
+This pattern reveals a deeper principle: platform constraints drive protocol innovation. MWA exists not as a compromise but as a native mobile architecture that embraces sandboxing rather than fighting it. The same thinking applies everywhere decentralized systems meet platform restrictions—the best solutions design for the constraint, not around it.

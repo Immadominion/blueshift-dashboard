@@ -20,7 +20,7 @@ Choosing an embedded wallet architecture isn't about finding the "best" option. 
 
 **Rare signing** (e.g., monthly subscription, occasional purchase): External wallets via MWA may suffice. Simpler architecture, less vendor dependency.
 
-**Frequent signing** (e.g., games, social interactions): Embedded wallets dramatically improve UX. Each external wallet prompt is friction.
+**Frequent signing** (e.g., games, social interactions): Embedded wallets reduce signing friction from 3-5 seconds per external wallet prompt to <500ms biometric approval. Each external wallet prompt is friction.
 
 **Continuous signing** (e.g., automated trading, bots): Session keys or API-authenticated wallets. Human approval for every action isn't feasible.
 
@@ -311,6 +311,106 @@ Before launching with embedded wallets, verify:
 - Privacy policy addresses key management
 - Regulatory requirements for your jurisdiction met
 
+<ArticleSection name="Hybrid Embedded + MWA" id="hybrid" level="h2" />
+
+Many production apps implement both embedded wallets and MWA external wallet connections. This hybrid approach serves diverse user segments with different preferences.
+
+### The Pattern
+
+```typescript
+// Connection abstraction
+interface WalletConnection {
+  publicKey: PublicKey;
+  signTransaction(tx: VersionedTransaction): Promise<VersionedTransaction>;
+  signMessage(msg: Uint8Array): Promise<Uint8Array>;
+  disconnect(): Promise<void>;
+}
+
+// Embedded wallet implementation (Privy example)
+class EmbeddedConnection implements WalletConnection {
+  async signTransaction(tx: VersionedTransaction) {
+    const provider = await wallet.getProvider();
+    return await provider.signTransaction(tx);
+  }
+  // ... other methods
+}
+
+// MWA external wallet implementation
+class MWAConnection implements WalletConnection {
+  async signTransaction(tx: VersionedTransaction) {
+    return await transact(async (wallet) => {
+      await authorizeSession(wallet);
+      const [signed] = await wallet.signTransactions({ transactions: [tx] });
+      return signed;
+    });
+  }
+  // ... other methods
+}
+
+// User chooses connection type
+function ConnectWalletScreen() {
+  return (
+    <>
+      <Button onPress={() => connectEmbedded()}>
+        Quick Start (Email/Social)
+      </Button>
+      <Button onPress={() => connectMWA()}>
+        Connect External Wallet
+      </Button>
+    </>
+  );
+}
+```
+
+### When to Offer Both
+
+**Onboarding flow:** Present embedded wallet as the default "Quick Start" option. Most users choose the path of least resistance.
+
+**Settings screen:** Add "Connect External Wallet" option for users who prefer self-custody after experiencing your app.
+
+**Feature gates:** Some features might require external wallet connection (e.g., importing existing NFT collections, using specific wallet features).
+
+### Implementation Considerations
+
+Both connection types produce the same interface: sign transactions, sign messages, provide a public key. Your application logic remains identical whether the user authenticated via embedded wallet or connected Phantom.
+
+Transaction building code from Course 3 works unchanged:
+
+```typescript
+// This code doesn't care about connection type
+const transaction = new VersionedTransaction(
+  new TransactionMessage({
+    payerKey: connection.publicKey,  // Works with both
+    recentBlockhash: blockhash,
+    instructions: [/* ... */],
+  }).compileToV0Message()
+);
+
+const signed = await connection.signTransaction(transaction);  // Works with both
+```
+
+Privy explicitly supports this pattern—their SDK includes both embedded wallet creation and MWA external wallet connections through a unified interface.
+
+### User Experience Flow
+
+1. **First launch:** User sees "Quick Start with Email" and "Connect Wallet" options
+2. **Quick start path:** Email authentication creates embedded wallet immediately
+3. **Settings later:** User can add external wallet connection to their account
+4. **Wallet switching:** Let users choose which wallet to use for each transaction
+
+The embedded wallet provides immediate access. The external wallet option satisfies users who require self-custody or already use wallets across multiple apps.
+
+### Migration Path
+
+Some users start with embedded wallets and later want to transition to self-custody:
+
+1. User creates embedded wallet (immediate access)
+2. User transfers assets to external wallet over time
+3. Eventually stops using embedded wallet
+4. Your app continues working with their external wallet
+
+This gradual migration lets users experience your application before making custody decisions.
+
 <ArticleSection name="Conceptual Summary" id="conceptual-summary" level="h2" />
 
 Choosing an embedded wallet approach requires matching architecture to requirements:
@@ -339,3 +439,5 @@ Embedded wallets transform onboarding by removing seed phrases and external wall
 Choose based on understanding, not marketing. The cryptographic foundations you've learned in this course give you the vocabulary to ask the right questions and evaluate answers critically.
 
 Build something. Ship it to users. Learn what your specific audience actually needs. The best architecture is the one that serves your users while meeting your security and business requirements.
+
+With your wallet architecture chosen, **Course 3 (On-Chain Operations)** teaches wallet-agnostic patterns for tokens, NFTs, and program interaction—the foundational operations your app performs regardless of whether users connect via MWA or embedded wallets.

@@ -6,11 +6,11 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 You've learned the Mobile Wallet Adapter protocol from first principles to production patterns. This final lesson consolidates everything into a complete token sender application and sets you up for the next steps in Solana mobile development.
 
-> The best way to internalize what you've learned is to build something real.
+The best way to internalize what you've learned is to build something real.
 
 <ArticleSection name="Capstone Project: Token Sender" id="capstone" level="h2" />
 
-Let's build a complete dApp that:
+Build a complete dApp that:
 - Connects to a wallet using the AuthorizationProvider
 - Displays account balance
 - Sends SOL to any address
@@ -553,45 +553,22 @@ const styles = StyleSheet.create({
 });
 ```
 
-<ArticleSection name="What You've Learned" id="summary" level="h2" />
+<ArticleSection name="What's Next" id="whats-next" level="h2" />
 
-This course covered:
+You understand MWA from protocol fundamentals to production patterns. You know why ephemeral sessions exist, how ECDH key exchange secures communication, and how auth tokens enable frictionless reconnection. The protocol's architectural choices—local socket transport, stateless sessions, explicit authorization—all follow from mobile's security constraints.
 
-1. **Protocol Fundamentals**: How MWA sessions work, the local socket transport, ECDH key exchange, and encrypted JSON-RPC.
-
-2. **Environment Setup**: React Native project configuration, required polyfills, Expo development builds.
-
-3. **Wallet Connection**: The `transact()` pattern, authorization flow, identity verification, auth token caching.
-
-4. **Transaction Signing**: Building versioned transactions, `signAndSendTransactions` vs `signTransactions`, batching strategies.
-
-5. **Message Signing**: Off-chain attestations, Sign In With Solana, backend verification.
-
-6. **State Management**: AuthorizationProvider pattern, React Context for wallet state, multi-account support.
-
-7. **Error Handling**: MWA error codes, user-friendly messages, retry strategies, session recovery.
-
-8. **Device Testing**: Android setup, debugging workflows, testing checklist.
+The patterns here—AuthorizationProvider, error handling, device testing—handle the messy reality of mobile development. Network failures, user cancellations, wallet crashes, and version mismatches happen constantly. Production apps survive these conditions by building robustness into every interaction.
 
 <ArticleSection name="Next Steps" id="next-steps" level="h2" />
 
-You're now equipped to build production mobile Solana dApps. Here's where to go next:
+With MWA fundamentals complete, you can build production mobile dApps that connect to external wallets. The curriculum branches from here based on your needs.
 
-**Advanced MWA Features**:
-- Wallet capabilities detection
-- Custom chain identifiers
-- Token account management
+**Course 2: Embedded Wallets** teaches an alternative to MWA where the wallet lives inside your app rather than as an external dependency. Users authenticate with biometrics or social login instead of managing seed phrases. Many production apps implement both approaches: embedded wallets for <1s wallet creation without seed phrases, MWA for users who prefer self-custody.
 
-**Beyond MWA**:
-- Solana Pay for payments and requests
-- Blinks and Actions for shareable transactions
-- Secp256r1 for passkey authentication
+**Course 3: On-Chain Operations** covers what happens after wallet connection: token transfers, NFT operations, program interaction, and Blinks. The operations work identically whether you use MWA or embedded wallets.
 
-**Production Considerations**:
-- App Store submission requirements
-- Analytics and crash reporting
-- Security audits for wallet interactions
+**Course 4: MWA Deep Dive** explains the protocol internals. Most developers won't need this level of detail. Take it if you're building a wallet, debugging connection failures, conducting security audits, or implementing custom transports like Bluetooth.
 
-The mobile Solana ecosystem is growing rapidly. With MWA as your foundation, you can build apps that bring self-custody to billions of mobile users.
+**Course 5: dApp Store Publishing** walks through distribution: publishing to the Solana dApp Store, navigating Apple and Google app store policies for crypto apps, and production best practices.
 
-**Congratulations on completing the Mobile Wallet Adapter course!**
+After Course 1, Courses 2, 3, and 4 can be taken in any order. Course 5 assumes you have a working app from Courses 1 and 3.

@@ -10,7 +10,7 @@ Message signing enables authentication flows, off-chain attestations, and crypto
 
 > Message signatures prove wallet ownership without touching the blockchain. They're free, instant, and verifiable by anyone.
 
-In this lesson, you'll create a `useSignMessage` hook and learn how to implement Sign In With Solana for authentication.
+This lesson covers creating a `useSignMessage` hook and implementing Sign In With Solana for authentication.
 
 <ArticleSection name="How Message Signing Works" id="how-it-works" level="h2" />
 
@@ -416,4 +416,4 @@ function isSignatureExpired(issuedAt: string, maxAgeMs: number = 300000): boolea
 }
 ```
 
-Message signing is the foundation of wallet-based authentication. In the next lesson, we'll build an AuthorizationProvider to manage all this state across your application.
+Message signing is the foundation of wallet-based authentication. The next lesson covers building an AuthorizationProvider to manage all this state across your application.

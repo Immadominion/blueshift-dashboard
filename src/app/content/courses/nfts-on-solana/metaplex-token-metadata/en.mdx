@@ -49,7 +49,7 @@ While Metadata accounts effectively serve both fungible and non-fungible tokens,
 
 The `Master Edition` account addresses this need as a specialized PDA that governs token authority management. This account is created only after the Token Metadata program verifies that proper non-fungible token properties have been established.
 
-The Master Edition system uses a sophisticated approach to authority management. Rather than permanently destroying mint authority, the program transfers both mint and freeze authorities to the Master Edition PDA. This design provides enhanced security and functionality compared to permanently voided authorities while maintaining strict control over token creation and management. 
+The Master Edition system uses a sophisticated approach to authority management. Rather than permanently destroying mint authority, the program transfers both mint and freeze authorities to the Master Edition PDA. This design enables provable scarcity (no new tokens can be minted without the PDA's permission) while maintaining the ability to freeze malicious tokens—capabilities impossible with permanently voided authorities. 
 
 > Read [the FAQ](https://developers.metaplex.com/token-metadata/faq#why-are-the-mint-and-freeze-authorities-transferred-to-the-edition-pda) to understand the reason behind this choice.
 

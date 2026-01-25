@@ -4,7 +4,7 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 While the original Token program provided essential functionality like minting, transferring, and freezing tokens, Token Extensions unlock a new paradigm of programmable tokens.
 
-This enhanced program maintains full compatibility with existing SPL Token operations while adding sophisticated features such as transfer hooks for custom logic execution, built-in fee mechanisms, enhanced metadata support, interest-bearing calculations, and advanced security controls.
+This program maintains full compatibility with existing SPL Token operations while adding sophisticated features such as transfer hooks for custom logic execution, built-in fee mechanisms, on-chain metadata storage (eliminating external metadata account dependencies), interest-bearing calculations, and fine-grained transfer restrictions.
 
 ### Extension Compatibility
 
@@ -126,7 +126,7 @@ pub const immutable_owner_extension_header: [u8; 4] = [7, 0, 0, 0];
 
 <ArticleSection name="Memo Transfer Extension" id="memo-transfer-extension" level="h2" />
 
-The `MemoTranfer Extension` is a `Token` account extension that enforces that all incoming transfers to a token account include a memo, facilitating enhanced transaction tracking and user identification.
+The `MemoTranfer Extension` is a `Token` account extension that enforces that all incoming transfers to a token account include a memo, enabling transaction provenance tracking and user identification for compliance purposes.
 
 This extension is particularly useful for exchanges, regulated institutions, and applications that need to track the purpose or source of incoming transfers for compliance, accounting, or customer service purposes. When enabled, any transfer to the account will fail unless it includes a memo instruction in the same transaction.
 

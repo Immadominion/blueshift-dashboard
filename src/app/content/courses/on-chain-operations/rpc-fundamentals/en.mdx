@@ -1,15 +1,12 @@
----
-title: "RPC Fundamentals for Mobile"
-description: "Learn how to connect to Solana's network from mobile, handle RPC requests efficiently, and choose the right providers."
----
-
 import { ArticleSection } from "../../../../../components/ArticleSection/ArticleSection";
+
+# RPC Fundamentals for Mobile
 
 <ArticleSection name="The Mobile RPC Challenge" id="the-mobile-rpc-challenge" level="h2" />
 
 Mobile apps don't connect to Solana directly. They speak to RPC nodes: intermediaries that accept your JSON requests and relay them to validators. On desktop browsers, RPC calls feel instant. On mobile, every millisecond matters. Network latency, cellular connections, and battery constraints change how you think about RPC.
 
-> "RPC quality really matters. A good RPC setup forwards transactions quickly, handles load and retries, and stays well connected to the network."
+RPC quality determines transaction success rates. Good providers forward transactions quickly, handle load with retries, and maintain strong validator connections. Poor RPC infrastructure means failed transactions, stale data, and frustrated users.
 
 The Solana network produces blocks roughly every 400 milliseconds. Your mobile app needs to fetch blockhashes, submit transactions, and confirm results, all while the user might be on a spotty 4G connection.
 
@@ -253,7 +250,7 @@ connection.onSignature(
     if (result.err) {
       console.error("Transaction failed:", result.err);
     } else {
-      console.log("Transaction confirmed!");
+      console.log("Transaction confirmed");
     }
   },
   "confirmed"
@@ -324,13 +321,6 @@ try {
 }
 ```
 
-<ArticleSection name="Key Takeaways" id="key-takeaways" level="h2" />
+RPC quality determines mobile dApp quality. A carefully chosen provider, intelligent caching, and mobile-aware retry logic transform a fragile connection into reliable infrastructure. These fundamentals support every on-chain operation you'll build: token transfers, NFT operations, program interactions.
 
-- **Batch requests** when possible; every round trip costs time on mobile
-- **Use `confirmed` commitment** for the speed/reliability balance
-- **Add polyfills** before importing `@solana/web3.js`
-- **Choose a dedicated RPC provider** for production
-- **Build retry logic** into all network operations
-- **Clean up subscriptions** to prevent memory leaks and battery drain
-
-In the next lesson, we'll use these RPC fundamentals to build actual transactions: starting with token transfers.
+The patterns here—batching requests, cleaning up subscriptions, handling intermittent connectivity—aren't just optimizations. They're the difference between an app users trust and one they delete after the first failed transaction.

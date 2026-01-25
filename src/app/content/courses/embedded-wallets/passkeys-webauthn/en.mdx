@@ -4,9 +4,9 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![Passkeys and WebAuthn](/graphics/course-banners/embedded-wallets.png)
 
-Passkeys represent a fundamental shift in authentication. The private key never leaves your device's secure hardware. FaceID, fingerprint, or PIN gates access. Phishing becomes mathematically impossible because credentials are bound to specific domains. And crucially for blockchain, passkeys use secp256r1, the same curve Solana now supports natively.
+A user receives a convincing email. They click the link to `evil-myapp.com` and enter their password. The attacker now controls their account. This attack—phishing—succeeds because passwords are transmittable secrets. Once revealed, they work anywhere.
 
-This isn't a workaround or an adaptation layer. Passkey signatures can authorize Solana transactions directly.
+Passkeys eliminate this vulnerability. Every passkey is cryptographically bound to its origin domain. A passkey created for `myapp.com` refuses to sign for `evil-myapp.com`, even if the user attempts it. The binding happens in hardware. No amount of social engineering can override it. Phishing becomes mathematically impossible.
 
 <ArticleSection name="The Problem with Passwords and Seeds" id="password-problem" level="h2" />
 
@@ -152,7 +152,7 @@ Native secp256r1 support enables a powerful pattern: Program Derived Addresses (
 
 ### The Architecture
 
-Instead of a traditional keypair wallet, the "wallet" becomes a PDA derived from the passkey's public key:
+Instead of a traditional keypair wallet, the "wallet" becomes a PDA derived from the passkey's public key. The passkey signature directly authorizes on-chain operations without any intermediary custody.
 
 ```
 +----------------+     +-------------------+     +-----------------+
@@ -170,6 +170,43 @@ Instead of a traditional keypair wallet, the "wallet" becomes a PDA derived from
         |                      |     behalf of PDA      |
         |                      +----------------------->|
 ```
+
+Here's how this looks in practice:
+
+```typescript
+// User initiates transfer on device
+const transferIx = SystemProgram.transfer({
+  fromPubkey: walletPDA,  // The PDA derived from passkey pubkey
+  toPubkey: recipient,
+  lamports: amount,
+});
+
+// Create challenge from transaction data
+const challenge = Buffer.from(transferIx.data);
+
+// Request passkey signature (triggers FaceID/fingerprint)
+const passkeySignature = await navigator.credentials.get({
+  publicKey: {
+    challenge,
+    rpId: 'myapp.com',
+    userVerification: 'required',
+  }
+});
+
+// Submit to on-chain program with passkey signature
+const tx = new Transaction().add(
+  // Instruction containing passkey signature + challenge
+  createVerifyAndExecuteInstruction({
+    passkeySignature,
+    challenge,
+    instruction: transferIx,
+  })
+);
+
+await sendTransaction(tx);
+```
+
+The on-chain program verifies the passkey signature proves ownership of the wallet PDA, then executes the transfer. Without the passkey, the PDA cannot be accessed—no seed phrase, no private key file, just hardware-bound authentication.
 
 ### Security Properties
 
@@ -301,27 +338,9 @@ Passkey UX is significantly smoother than traditional wallet flows:
 
 The complexity is hidden in hardware, not pushed onto users.
 
-<ArticleSection name="Provider Implementations" id="providers" level="h2" />
-
-Embedded wallet providers use passkeys differently:
-
-**LazorKit** is fully passkey-native. Every smart wallet is a PDA controlled by a secp256r1 passkey. There's no MPC, no key splitting. The passkey IS the authentication.
-
-**Turnkey** uses passkeys as the authentication mechanism to access keys stored in their HSMs. The passkey proves you're authorized; Turnkey's enclave does the actual Solana signing.
-
-**Privy** and **Dynamic** support passkeys as one authentication option alongside email, phone, and social login. The passkey authenticates to their MPC system, which then produces Solana signatures.
-
-**Para** uses passkeys for authentication, with the underlying wallet secured by MPC key distribution.
-
-The distinction matters:
-- **Passkey-native** (LazorKit): The passkey signature IS the blockchain authorization
-- **Passkey-authenticated** (others): The passkey proves identity to a system that then authorizes
-
-Both are valid architectures with different security and UX tradeoffs.
-
 <ArticleSection name="Security Considerations" id="security" level="h2" />
 
-Passkeys dramatically improve security over passwords and seed phrases, but aren't without considerations.
+Passkeys eliminate phishing attacks through origin binding, prevent credential theft through public-key cryptography, and remove keylogger vulnerabilities by avoiding typed secrets—but aren't without considerations.
 
 ### What Passkeys Protect Against
 

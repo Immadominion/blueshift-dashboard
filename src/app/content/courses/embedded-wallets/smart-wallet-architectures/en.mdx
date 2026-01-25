@@ -141,7 +141,7 @@ Authorization:
   - Session key: Limited to specific programs, expires after 24h
 ```
 
-This enables better dApp UX without compromising security. Games can execute rapid transactions with session keys while high-value operations still require passkey authorization.
+This reduces transaction approval latency from 2-3s per passkey signature to <100ms per session key signature without compromising security. Games can execute rapid transactions with session keys while high-value operations still require passkey authorization.
 
 <ArticleSection name="Account Abstraction Patterns" id="account-abstraction" level="h2" />
 
@@ -309,7 +309,7 @@ The passkey signature in step 3 happens in the secure enclave. The verification 
 
 ### Paymaster Integration
 
-LazorKit includes paymaster support for gas abstraction:
+LazorKit includes paymaster support for [gas abstraction](#account-abstraction):
 
 ```
 PaymasterConfig {
@@ -318,7 +318,7 @@ PaymasterConfig {
 }
 ```
 
-The paymaster wraps user-signed operations into fee-paid transactions. Users interact with Solana applications without needing SOL.
+The paymaster wraps user-signed operations into fee-paid transactions. Users interact with Solana applications without needing SOL. See the [Account Abstraction Patterns](#account-abstraction) section above for how gas sponsorship and alternative fee tokens work.
 
 <ArticleSection name="Trade-off Analysis" id="tradeoffs" level="h2" />
 
@@ -367,8 +367,8 @@ Different smart wallet architectures make different trade-offs:
 - Mainstream? Need email/social fallbacks.
 
 **Recovery requirements:**
-- High-value? Need robust recovery options.
-- Disposable? Simpler is better.
+- High-value? Need multiple recovery paths: social recovery, backup authentication, or provider-assisted recovery.
+- Disposable? Single recovery method or no recovery acceptable.
 
 **Regulatory environment:**
 - Compliance needs? May require custody options.
@@ -417,7 +417,7 @@ Smart wallets transform Solana accounts from key-controlled to program-controlle
 
 1. **PDAs** create addresses controllable only through program logic
 2. **Authorization rules** can require passkeys, multiple signatures, timelocks, or any combination
-3. **Gas abstraction** lets users interact without holding SOL
+3. **[Gas abstraction](#account-abstraction)** lets users interact without holding SOL through paymasters
 4. **Modular signers** enable flexible authentication strategies
 
 The security model shifts from "don't lose your key" to "design secure authorization rules." Hardware-backed passkeys provide strong authentication. On-chain programs enforce policies. Multiple authorization paths enable recovery.

@@ -10,7 +10,7 @@ MWA provides two paths: sign-and-send (wallet handles everything) or sign-only (
 
 > `signAndSendTransactions` is the preferred method. The wallet handles RPC submission, retry logic, and confirmation, reducing failure modes in your app.
 
-In this lesson, you'll create utility functions for building transactions and a `useSendSol` hook that handles the complete send flow.
+This lesson covers creating utility functions for building transactions and a `useSendSol` hook that handles the complete send flow.
 
 <ArticleSection name="Building Transactions" id="building-transactions" level="h2" />
 
@@ -242,7 +242,7 @@ const signatures = await wallet.signAndSendTransactions({
 // signatures[2] corresponds to tx3
 ```
 
-The wallet shows users all transactions in a single approval prompt. This is better UX than three separate prompts.
+The wallet shows users all transactions in a single approval prompt. This reduces user friction from 3 approval prompts to 1.
 
 ### Sequential vs Parallel Sending
 
@@ -495,4 +495,4 @@ if (signature) {
 }
 ```
 
-In the next lesson, we'll explore message signing: authentication, off-chain attestations, and Sign In With Solana.
+Transaction signing is where theory meets user intent. Every pattern here—fresh blockhashes, signature confirmation, error handling—exists because distributed systems have no concept of "undo." Unlike web forms that can be resubmitted or retried freely, blockchain transactions are final the moment they confirm. This forces upfront rigor in a way web development rarely requires, and understanding this changes how you think about user actions in any decentralized context.

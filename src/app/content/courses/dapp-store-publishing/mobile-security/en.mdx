@@ -2,11 +2,9 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 # Mobile Security Essentials
 
-Your app is published. Users are downloading it. But here's the uncomfortable truth: every APK you ship can be reverse engineered. Every API key embedded in your code can be extracted. Every authentication flow can be analyzed.
+Every APK you ship is readable source code. The `strings` command extracts hardcoded API keys in seconds. Tools like `jadx` decompile your entire application back to Java. Attackers don't need sophisticated techniques—just standard tools and five minutes.
 
-This isn't theoretical. A developer recently documented hacking their own Flutter app in under an hour, extracting API keys using nothing more than the `strings` command on their APK file.
-
-This lesson covers the security realities of mobile crypto apps and practical defenses.
+This creates constraints web developers don't face. Server-side secrets stay on servers. Client-side secrets live on devices you don't control, in files attackers can freely examine. Understanding what you can and cannot protect determines your security architecture.
 
 <ArticleSection name="The Reverse Engineering Reality" id="the-reverse-engineering-reality" level="h2" />
 

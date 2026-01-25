@@ -6,7 +6,7 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 Mobile wallet connections fail in ways desktop apps never see. The wallet app might not be installed. The user might switch away before signing. The session might timeout mid-transaction. Bluetooth on some Saga devices can interrupt the connection.
 
-Robust error handling separates production dApps from demos. This lesson gives you patterns for every failure mode in MWA.
+Error handling that covers wallet connection failures, session timeouts, user cancellations, and network dropouts separates production dApps from demos. This lesson gives you patterns for every failure mode in MWA.
 
 > Don't catch errors and show generic messages. MWA errors tell you exactly what happened: use that information.
 
@@ -111,7 +111,7 @@ export function handleMWAError(error: unknown): MWAErrorResult {
       };
     }
 
-    // Session timeout
+    // Session timeout (see Protocol Deep Dive lesson for timeout mechanics)
     if (error.message.includes('timeout') || error.message.includes('Timeout')) {
       return {
         userMessage: 'Wallet connection timed out. Please try again.',
@@ -564,4 +564,4 @@ async function trackedTransact<T>(
 }
 ```
 
-Good error handling makes your dApp feel professional. In the next lesson, we'll cover testing your implementation on actual devices.
+Good error handling makes your dApp feel professional. The next lesson covers testing your implementation on actual devices.

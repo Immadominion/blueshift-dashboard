@@ -4,6 +4,8 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![MWA Deep Dive](/graphics/course-banners/mwa-deep-dive.png)
 
+Course 1 taught you to use `transact()` and trust it works. This course reveals what happens underneath—how ECDH key exchange secures every message, why sessions are ephemeral, and when you need protocol internals versus SDK abstractions.
+
 Browser extension wallets work because your dApp and wallet share the same execution context: the browser. Phantom's extension can inject itself into every page, intercept wallet requests, and respond directly. Simple, elegant, fragile.
 
 Mobile breaks this model completely. Your React Native app runs in its own sandbox. The wallet app runs in another. No shared memory. No injected scripts. No common window object. The operating system enforces strict isolation between applications.
@@ -112,7 +114,7 @@ The reflector enforces timeouts (30 seconds for half-open connections, 90 second
 
 <ArticleSection name="Session Lifecycle" id="lifecycle" level="h2" />
 
-Understanding the session lifecycle helps debug issues:
+Understanding the session lifecycle helps debug issues. In Course 1, you called `transact()` and it worked. Here's what actually happens underneath:
 
 ### 1. Association
 The dApp generates an association keypair and constructs a `solana-wallet:` URI. On Android, opening this URI launches the wallet app via an Intent.
@@ -124,13 +126,13 @@ The wallet starts a WebSocket server on the specified port. The dApp connects an
 The apps exchange `HELLO_REQ` and `HELLO_RSP` messages containing ECDH public keys. They derive a shared AES key. The session is now encrypted.
 
 ### 4. Authorization
-The dApp sends an `authorize` JSON-RPC request. The wallet shows UI asking the user to approve. If approved, the wallet returns accounts and an `auth_token`.
+The dApp sends an `authorize` JSON-RPC request. The wallet shows UI asking the user to approve. If approved, the wallet returns accounts and an `auth_token`. This is the `wallet.authorize()` call from Course 1.
 
 ### 5. Privileged Operations
-With authorization, the dApp can request signing (`sign_and_send_transactions`, `sign_messages`).
+With authorization, the dApp can request signing (`sign_and_send_transactions`, `sign_messages`). These correspond to the `wallet.signAndSendTransactions()` and `wallet.signMessages()` methods you used in Course 1.
 
 ### 6. Session Close
-When the dApp's `transact()` callback completes, the WebSocket closes. All session keys are discarded.
+When the dApp's `transact()` callback completes, the WebSocket closes. All session keys are discarded. This is why you can't retry operations after an error—you need a fresh `transact()` call for a new session.
 
 <ArticleSection name="What Makes MWA Different" id="different" level="h2" />
 

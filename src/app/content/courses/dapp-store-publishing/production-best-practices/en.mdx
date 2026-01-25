@@ -104,7 +104,7 @@ Solana RPC endpoints are your lifeline to the blockchain. Manage them carefully.
 
 ### Use multiple RPC providers
 
-Don't depend on a single provider:
+Single RPC dependencies create cascading failures. When your primary provider hits rate limits or goes down, every transaction in your app fails simultaneously. Multiple providers with automatic failover ensure continuity.
 
 ```typescript
 const RPC_ENDPOINTS = [
@@ -129,27 +129,31 @@ const executeWithRetry = async <T>(
   maxRetries = 3
 ): Promise<T> => {
   let lastError;
-  
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await operation(getConnection());
     } catch (error) {
       lastError = error;
-      
+
       // Rotate on connection errors
       if (error.message.includes('429') || error.message.includes('timeout')) {
         rotateEndpoint();
       }
     }
   }
-  
+
   throw lastError;
 };
 ```
 
+The modulo operator in `rotateEndpoint` ensures cycling through the array wraps back to the first endpoint. The error message checks detect rate limiting (429) and network timeouts, triggering rotation before retrying. Without this pattern, a single provider outage becomes a complete app outage.
+
 ### Rate limiting awareness
 
 RPC providers have rate limits. Handle them gracefully:
+
+When you hit rate limits, immediately retrying compounds the problem. Exponential backoff spaces out retries, giving the provider's rate limiter time to reset while preventing thundering herd scenarios where many clients retry simultaneously.
 
 ```typescript
 // Implement exponential backoff
@@ -172,15 +176,19 @@ const fetchWithBackoff = async (fetchFn: () => Promise<any>, maxRetries = 5) => 
 };
 ```
 
+The exponential backoff (2^attempt) means delays grow from 1s to 2s to 4s to 8s, with a 30s cap. The `Math.min` prevents infinite growth that could freeze your UI. Without the cap, attempt 15 would wait over 9 hours.
+
 ### WebSocket health
 
 For real-time updates, WebSocket connections can silently fail:
+
+WebSocket disconnections often happen without error events. Network changes, load balancer timeouts, or RPC provider restarts can leave your subscription active in memory but dead in practice. Users see stale data until they restart the app.
 
 ```typescript
 const setupAccountSubscription = (publicKey: PublicKey) => {
   let ws: number;
   let heartbeatInterval: NodeJS.Timeout;
-  
+
   const connect = () => {
     ws = connection.onAccountChange(
       publicKey,
@@ -188,7 +196,7 @@ const setupAccountSubscription = (publicKey: PublicKey) => {
         handleAccountUpdate(accountInfo);
       }
     );
-    
+
     // Heartbeat to detect silent disconnections
     heartbeatInterval = setInterval(async () => {
       try {
@@ -200,17 +208,19 @@ const setupAccountSubscription = (publicKey: PublicKey) => {
       }
     }, 30000);
   };
-  
+
   const cleanup = () => {
     if (ws) connection.removeAccountChangeListener(ws);
     if (heartbeatInterval) clearInterval(heartbeatInterval);
   };
-  
+
   connect();
-  
+
   return cleanup;
 };
 ```
+
+The 30-second health check calls `getSlot()` over the same WebSocket connection. If it fails, the connection is dead and gets recreated. Without this, a silent disconnection means users never see balance updates, transaction confirmations, or other real-time events.
 
 <ArticleSection name="Update Strategy" id="update-strategy" level="h2" />
 
@@ -451,17 +461,17 @@ As your user base grows, different parts of your system will strain.
 Public Solana RPC endpoints have low rate limits. Paid providers charge per request:
 
 ```typescript
-// Optimize RPC usage
+// Reduce RPC costs by minimizing request frequency
 
-// Bad: Polling every second
+// Bad: Polling every second (86,400 requests/day per user)
 setInterval(() => connection.getBalance(publicKey), 1000);
 
-// Better: Use WebSocket subscriptions
+// Good: Use WebSocket subscriptions (1 subscription per user, unlimited updates)
 connection.onAccountChange(publicKey, (accountInfo) => {
   updateBalance(accountInfo.lamports);
 });
 
-// Even better: Batch requests when possible
+// Best: Batch multiple independent queries into parallel requests (3 separate requests → 1 roundtrip)
 const [balance, tokenAccounts, recentTx] = await Promise.all([
   connection.getBalance(publicKey),
   connection.getParsedTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID }),
@@ -547,7 +557,7 @@ Ongoing tasks to keep your app healthy:
 
 <ArticleSection name="Course Summary" id="course-summary" level="h2" />
 
-You've completed the final course in the Solana mobile development curriculum. Let's recap what we covered:
+This completes the final course in the Solana mobile development curriculum. Here's what we covered:
 
 **Lesson 1: Distribution landscape**
 - Three channels: Play Store, App Store, Solana dApp Store

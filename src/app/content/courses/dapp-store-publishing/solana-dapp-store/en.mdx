@@ -72,6 +72,8 @@ The Publisher Portal is the easiest way to submit your first app:
 
 For automated publishing or CI/CD pipelines, use the dapp-store CLI.
 
+The CLI requires Node.js 18-21 because it depends on native cryptographic libraries (ed25519 and secp256k1) that only compile cleanly against these versions. Node 22+ changed internal APIs that break compatibility with the Solana web3.js dependency chain.
+
 ```shellscript
 # Check Node version - must be 18-21
 node --version
@@ -88,7 +90,7 @@ npm install --save-dev @solana-mobile/dapp-store-cli
 npx dapp-store init
 ```
 
-This creates a `config.yaml` with the proper structure for your app metadata.
+This creates a `config.yaml` with the proper structure for your app metadata. If `node --version` shows 22 or higher, use a version manager (nvm/fnm) to switch to Node 20 before proceeding.
 
 You'll need a keypair with SOL for minting NFTs. You can use your existing wallet or generate a dedicated publishing keypair.
 
@@ -161,11 +163,15 @@ You'll need several visual assets for your listing.
 
 ### Required images
 
+These size requirements match standard Android asset guidelines and ensure your app displays correctly across all Solana Mobile Stack devices, from the Saga to future hardware.
+
 | Asset | Size | Format | Purpose |
 |-------|------|--------|---------|
 | App Icon | 512 × 512 px | PNG | Main store listing |
 | Banner Graphic | 1200 × 600 px | PNG/JPG | Promotional banner (required) |
 | Screenshots | Min 1080 × 1080 px | PNG/JPG | App functionality showcase |
+
+The 512×512 icon size is Android's launcher icon baseline. The 1200×600 banner follows the 2:1 aspect ratio used for featured content across mobile stores. The 1080px minimum for screenshots ensures quality on modern high-DPI displays without requiring unnecessarily large files.
 
 ### Screenshot requirements
 
@@ -196,7 +202,7 @@ mkdir -p assets/screenshots
 
 <ArticleSection name="Creating Your Publisher NFT" id="creating-your-publisher-nft" level="h2" />
 
-With everything prepared, let's create your Publisher identity.
+With everything prepared, create your Publisher identity.
 
 ### Via Publisher Portal (Recommended)
 
@@ -417,6 +423,6 @@ The icon in your APK doesn't match the icon you provided for the App NFT. Ensure
 
 <ArticleSection name="Next Steps" id="next-steps" level="h2" />
 
-You've now published to the Solana dApp Store: the most crypto-friendly distribution channel available.
+Publishing to the Solana dApp Store means your app registry entry is an NFT you control. No corporation can delist you without your keys. The review process exists to protect users, not extract rent. Direct crypto payments work because the platform treats blockchain interaction as a feature, not a violation.
 
-But you probably also want to reach users on traditional app stores. The next lesson covers how to navigate Apple and Google's crypto-specific policies and get your app approved.
+This distribution model is fundamentally different from traditional app stores. The next challenge is navigating Apple and Google's crypto policies while maintaining feature parity. Traditional app stores treat blockchain interaction with suspicion; success requires understanding their specific constraints and red lines.

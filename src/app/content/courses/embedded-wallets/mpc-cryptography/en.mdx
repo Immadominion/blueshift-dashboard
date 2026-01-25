@@ -4,11 +4,11 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![MPC Cryptography](/graphics/course-banners/embedded-wallets.png)
 
-Every traditional wallet has a fatal flaw: the private key exists in one place. Whether it's a seed phrase on paper, an encrypted file on your phone, or a hardware wallet in your drawer, compromise that single location and everything is lost.
+Your wallet contains $10,000. An attacker roots your phone and extracts the encrypted keystore. With offline brute-force attacks, they have unlimited time to crack it. Once compromised, everything is lost.
 
-Multi-Party Computation (MPC) eliminates this architectural weakness. The private key is split into shares distributed across multiple parties. No single party ever holds the complete key. To sign a transaction, the parties collaborate through cryptographic protocols that produce valid signatures without ever reconstructing the original key.
+Traditional key storage creates binary outcomes. Either the attacker has your key or they don't. No middle ground exists. Device compromise means total fund loss. Backup theft means total fund loss. A single vulnerability anywhere in the chain compromises everything.
 
-This isn't security through obscurity. It's a fundamental restructuring of where secrets live.
+Multi-Party Computation (MPC) changes the equation. The private key is split into shares distributed across multiple parties. No single party ever holds the complete key. To sign a transaction, shares collaborate through cryptographic protocols that produce valid signatures without ever reconstructing the original key. An attacker must compromise multiple independent systems simultaneously.
 
 <ArticleSection name="The Single Point of Failure Problem" id="single-point-of-failure" level="h2" />
 
@@ -80,11 +80,26 @@ Most embedded wallet providers use 2-of-2 threshold signatures:
 
 Neither party can sign alone. The user's device share requires biometric unlock. The provider's share sits in Hardware Security Modules (HSMs) that enforce authentication policies.
 
+From a developer perspective, you interact with this through the provider's SDK. The MPC protocol runs transparently:
+
+```typescript
+// Request signature through embedded wallet SDK
+const signature = await wallet.signTransaction(transaction);
+
+// Behind the scenes:
+// 1. Device share is unlocked with biometric
+// 2. SDK sends signing request to provider
+// 3. Provider authenticates the request
+// 4. MPC protocol executes between device and HSM
+// 5. Valid Ed25519 signature returned
+// The private key never existed in whole at any point
+```
+
 An attacker must simultaneously compromise:
 - The user's device AND bypass biometrics
 - The provider's infrastructure AND bypass HSM protections
 
-This is dramatically harder than compromising a single location.
+This is dramatically harder than compromising a single location. The API abstraction hides this complexity, presenting a standard wallet interface while MPC operates underneath.
 
 ### Why Not Just Multi-Sig?
 
@@ -229,20 +244,6 @@ MPC shifts trust, not eliminates it:
 | Full custody | None | Complete |
 
 For most users, MPC's trust model is more realistic than expecting perfect seed phrase management.
-
-<ArticleSection name="Provider Implementations" id="provider-implementations" level="h2" />
-
-Different embedded wallet providers implement MPC with varying architectures:
-
-**Privy** uses 2-of-2 threshold signatures with shares split between the user's device and Privy's HSM infrastructure. Key generation happens in secure enclaves with immediate splitting.
-
-**Dynamic** implements EdDSA FROST for native Solana signatures. Their 2-of-2 model includes wallet export capability, allowing users to extract the full key if they choose self-custody.
-
-**Para** (formerly Capsule) distributes shares across their MPC network with support for multiple authentication methods. Their architecture supports EVM, Solana, and Cosmos from the same share distribution.
-
-**Turnkey** provides the HSM infrastructure and signing protocols but leaves authentication entirely to developers. You bring your own identity verification; Turnkey provides secure key operations.
-
-Each makes different tradeoffs between security guarantees, recovery options, and developer flexibility.
 
 <ArticleSection name="Conceptual Summary" id="conceptual-summary" level="h2" />
 

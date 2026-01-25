@@ -4,34 +4,25 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![Embedded Wallets](/graphics/course-banners/embedded-wallets.png)
 
-Seed phrases were a necessary evil. For a decade, we've asked users to write down 12 or 24 random words, store them safely, and never lose them. The crypto-native accepted this as the cost of self-custody. Everyone else walked away.
+Traditional wallets demand perfect custody. Users must download a separate app, record a 24-word seed phrase, understand that any mistake means permanent fund loss, and then navigate wallet connection flows. Mobile Wallet Adapter improves the connection step but still requires this upfront burden.
 
-Embedded wallets eliminate seed phrases entirely. Users authenticate with biometrics, email, or social login: patterns they already use for every other app. The wallet exists inside your app, invisible to the user, secured by cryptographic techniques that don't require them to understand cryptography.
+Mobile users expect apps to work immediately. A crypto app that demands external wallet setup before showing any functionality introduces friction at the exact moment engagement matters most. Embedded wallets remove this barrier by handling key management invisibly while users authenticate through patterns they already trust: FaceID, Google accounts, email verification.
 
-> An embedded wallet isn't a compromise on security. Modern MPC and passkey-based systems can be *more* secure than a seed phrase scribbled on paper and stuffed in a drawer.
+Embedded wallets remove this friction. The wallet lives inside your application as invisible infrastructure. Users authenticate with FaceID or Google accounts. The private key is split across multiple parties using MPC, stored in hardware security modules, or controlled by smart contract logic. No seed phrases. No separate apps. Just authentication that works.
+
+Modern MPC and passkey-based embedded wallets distribute the attack surface. An attacker must compromise multiple independent systems simultaneously, whereas a seed phrase written on paper has a single point of failure.
 
 <ArticleSection name="The Problem with Traditional Wallets" id="the-problem-with-traditional-wallets" level="h2" />
 
-Ask anyone who's onboarded non-crypto users to a Web3 app. The conversation follows a predictable script:
+Traditional wallet onboarding requires users to download a wallet app, write down a 24-word seed phrase, understand that losing it means permanent fund loss, and then connect the wallet to your application. Mobile Wallet Adapter improves the connection experience but still requires this multi-step setup.
 
-1. "Download this wallet app"
-2. "Write down these 24 words"
-3. "Never lose them or you lose everything"
-4. "Now let's connect it to our app"
+Most mobile users expect apps to work immediately after installation. External wallet configuration introduces friction at the moment when you need users most engaged. Embedded wallets remove this friction by handling key management transparently while users authenticate through patterns they already trust.
 
-By step 2, you've lost 80% of potential users. By step 3, they're questioning their life choices.
-
-Traditional wallets were designed for a different era: when crypto meant Bitcoin, users were technically sophisticated, and "decentralization at all costs" was the only philosophy. Mobile Wallet Adapter (MWA) improves the connection experience but still requires users to manage external wallet apps.
-
-For most mobile experiences, this friction is unacceptable. Users expect to open an app and start using it within seconds, not configure external dependencies first.
+The tradeoff: users trust your application's wallet infrastructure rather than managing keys themselves. For crypto-native users who understand and prefer self-custody, external wallets remain the better choice. For mainstream users unfamiliar with blockchain, embedded wallets remove barriers that would otherwise prevent adoption.
 
 ### The UX Hierarchy
 
-Consider what users actually want from a wallet:
-
-1. **Sign things when needed**: Execute transactions, prove ownership
-2. **Not think about it**: The wallet should be infrastructure, not interface
-3. **Recover access if something breaks**: Without catastrophic loss
+Users want wallets that sign transactions when needed and remain invisible otherwise. The wallet should be infrastructure, not interface. If something breaks, recovery should work without catastrophic loss.
 
 Traditional wallets invert this hierarchy. They make the wallet the central experience, demand constant attention, and punish any mistake with permanent fund loss.
 
@@ -45,12 +36,7 @@ An embedded wallet is a cryptographic key pair managed programmatically by a ser
 
 From the user's perspective, they log in with their phone's FaceID or their Google account. Behind the scenes, this authentication grants access to sign transactions with a Solana keypair.
 
-### Key Advantages
-
-- **Zero onboarding friction**: Users authenticate with patterns they already know
-- **No seed phrase liability**: Nothing to write down, nothing to lose
-- **Embedded UX**: The wallet lives inside your app, not as an external dependency
-- **Programmable recovery**: Social recovery, backup factors, or institutional custody options
+This approach eliminates onboarding friction: users authenticate with patterns they already know rather than learning new key management procedures. There's no seed phrase to write down or lose. The wallet lives inside your application rather than requiring external dependencies. Recovery mechanisms can be programmable—social recovery, backup authentication factors, or institutional custody options—rather than the single point of failure that seed phrases represent.
 
 <ArticleSection name="Four Approaches to Key Security" id="four-approaches" level="h2" />
 
@@ -152,96 +138,47 @@ This flexibility lets applications adapt authentication to different user segmen
 
 <ArticleSection name="The Provider Landscape" id="the-provider-landscape" level="h2" />
 
-Several providers have emerged with different architectural approaches. Here's how they map to the cryptographic models:
+Providers implement these architectures in different combinations. Understanding which architecture a provider uses matters more than comparing feature lists.
 
-| Provider | Primary Architecture | Authentication Methods | Key Property |
-|----------|---------------------|----------------------|--------------|
-| **Privy** | MPC (2-of-2) | Email, phone, social, passkey, MWA | Hybrid embedded + external wallet support |
-| **Dynamic** | MPC with TSS-FROST | Email, social, passkey | Native Ed25519 signatures, key export available |
-| **Turnkey** | HSM Infrastructure | Bring your own auth | Maximum developer control |
-| **LazorKit** | Passkey Smart Wallets | Passkey only | No provider in signing path, built-in paymaster |
-| **Para** | MPC Distributed | Email, phone, social, passkey | Multi-chain (Solana, EVM, Cosmos) |
-| **Crossmint** | Modular Smart Wallets | Passkey, email, social, external, API | Flexible signer architecture, cross-chain |
-| **Phantom Connect** | TEE/HSM via OAuth | Google, Apple | Native Solana wallet, transaction simulation |
-| **Magic** | TEE (Fortanix SGX) | Email, SMS, social | Passwordless auth, multi-chain extensions |
-| **Web3Auth** | MPC (Torus Network) | Social, passwordless, custom | Highly customizable, account abstraction ready |
+### When Distributed Trust Matters (MPC)
 
-### Privy
+MPC providers split keys between user devices and provider infrastructure. No single party holds the complete key. Multiple backup options exist because shares can be stored independently. Key export is sometimes possible by reconstructing shares.
 
-Privy's MPC splits keys between the user's device and Privy's HSM infrastructure. They support both embedded wallets and external wallet connections via MWA, making them ideal for hybrid apps serving both crypto-native and mainstream users.
+Providers using MPC include **Privy** (2-of-2 MPC with hybrid embedded + MWA support), **Dynamic** (TSS-FROST with native Ed25519 and key export), **Para** (distributed MPC across Solana, EVM, and Cosmos), and **Web3Auth** (Torus network MPC with extensive customization).
 
-### Dynamic
+Choose MPC when you need distributed trust, want multiple recovery options, or may need key portability. The tradeoff: slightly higher signing latency due to coordination between parties.
 
-Dynamic implements EdDSA FROST for native Solana signatures. Their MPC architecture includes Wallet-as-a-Service features: users can backup wallet shares to Google Drive or export their complete private key.
+### When Provider Infrastructure Can Be Trusted (TEE/HSM)
 
-### Turnkey
+TEE/HSM providers store complete keys in hardware-isolated enclaves. Simpler architecture than MPC, with faster signing. Users trust the provider's hardware security rather than distributing trust across parties.
 
-Turnkey provides secure key infrastructure without imposing authentication choices. You bring your own identity verification. Turnkey provides HSMs and signing protocols. Maximum flexibility, but more integration work.
+Providers using TEE/HSM include **Turnkey** (bring-your-own-auth with maximum developer control), **Phantom Connect** (OAuth with Google/Apple, includes transaction simulation users already trust), and **Magic** (Fortanix SGX with passwordless email/SMS authentication).
 
-### LazorKit
+Choose TEE/HSM when simplified architecture is preferred, provider trust is acceptable, or signing speed matters. Recovery is provider-managed rather than user-controlled.
 
-LazorKit creates smart wallets (PDAs) controlled by WebAuthn passkeys. The private key never leaves your device's secure enclave. Includes built-in paymaster for gas sponsorship.
+### When Minimum Trust Assumptions Required (Passkey-Native)
 
-### Para (formerly Capsule)
+Passkey providers store keys in device secure enclaves with no provider in the signing path. The private key never leaves hardware. Smart wallets verify passkey signatures on-chain using Solana's secp256r1 precompile.
 
-Para distributes MPC shares across their network with support for EVM, Solana, and Cosmos from the same authentication. Ideal for multi-chain applications.
+Providers using passkeys include **LazorKit** (passkey-only smart wallets with built-in paymaster).
 
-### Crossmint
+Choose passkeys when provider infrastructure should not be in the critical path, users have passkey-capable devices, or transaction fees can be sponsored via paymaster.
 
-Crossmint implements smart wallets with modular signers. Multiple authentication methods can control the same wallet. Supports gradual security upgrades as users become more sophisticated.
+### When Flexibility Matters (Modular Signers)
 
-### Phantom Connect
+Modular providers let multiple authentication methods control the same smart wallet. Users can start with email, add a passkey later, and configure recovery through social connections. Security can evolve as users become more sophisticated.
 
-Phantom Connect creates embedded wallets through OAuth authentication (Google or Apple). Keys are stored in TEE/HSM infrastructure. This is particularly compelling for Solana apps because Phantom already handles transaction simulation, spam protection, and security warnings that users trust.
+Providers using modular signers include **Crossmint** (passkey, email, social, external wallet, and API key signers for the same smart wallet).
 
-```typescript
-// From @phantom/react-native-sdk
-const { connect } = useConnect();
-await connect({ provider: 'google' }); // or 'apple'
-```
-
-### Magic Link
-
-Magic uses Fortanix SGX (Software Guard Extensions) to create hardware-isolated enclaves where keys are stored and signing happens. Users authenticate via passwordless email links, SMS codes, or social login. The key never leaves the secure enclave.
-
-```typescript
-// From @magic-ext/solana
-const magic = new Magic('YOUR_API_KEY', {
-  extensions: [new SolanaExtension({ rpcUrl })]
-});
-await magic.solana.signTransaction(transaction);
-```
-
-### Web3Auth (MetaMask Embedded Wallets)
-
-Web3Auth distributes MPC shares across the Torus network with extensive customization options. Supports dozens of authentication providers and includes account abstraction integrations. Recently acquired by MetaMask, making it part of the Consensys ecosystem.
-
-```typescript
-// From @web3auth/react-native-sdk + @web3auth/solana-provider
-const solanaWallet = new SolanaWallet(web3auth.provider);
-await solanaWallet.signAndSendTransaction(transaction);
-```
+Choose modular signers when different user segments need different auth methods, security requirements may evolve, or you want to support progressive security upgrades.
 
 <ArticleSection name="When to Consider Alternatives" id="when-alternatives" level="h2" />
 
-Embedded wallets aren't always the answer. Consider the use case:
+Embedded wallets work best for applications with frequent signing operations like games, social tipping, or DeFi protocols serving non-crypto-native users. They excel when gas sponsorship matters for onboarding flows, or when recovery must be seamless without seed phrase backups.
 
-**Embedded wallets shine when:**
-- Signing is frequent (games, social tipping, DeFi)
-- Users are non-crypto-native (consumer apps)
-- You need gas sponsorship (onboarding flows)
-- Recovery must be seamless (no seed phrase backup)
+External wallets through MWA remain better for crypto-native users who prefer existing wallet management, applications that are read-heavy with rare signing needs, or contexts where maximum decentralization is required. Some users distrust any third-party involvement in key management and will always prefer self-custody.
 
-**External wallets may be better when:**
-- Users are crypto-native and prefer existing wallets
-- Your app is read-heavy with rare signing needs
-- Maximum decentralization is required
-- Users distrust any third-party involvement
-
-**Hybrid approaches work when:**
-- You serve both audiences
-- Users might start embedded and graduate to external wallets
-- You want optionality
+Hybrid implementations serve both audiences. Users can start with embedded wallets for immediate access, then optionally connect external wallets if they prefer self-custody as they become more sophisticated. This approach provides optionality rather than forcing a single authentication model.
 
 <ArticleSection name="Course Structure" id="course-structure" level="h2" />
 
@@ -267,6 +204,8 @@ After completing this course, you'll understand:
 - Understanding of Solana accounts and transactions
 - Basic familiarity with public key cryptography
 
+**Relationship to Course 1:** The Mobile Wallet Adapter course covers external wallet connections where users control their own keys through apps like Phantom or Solflare. This course covers embedded wallets where your application manages keys through third-party infrastructure. Many production apps implement both: embedded wallets for <1s wallet creation without seed phrases, with an option to connect external wallets for users who prefer self-custody. The on-chain operations from Course 3 work identically with either wallet type—only the signing mechanism differs.
+
 **Note:** Passkey functionality requires real device testing. Emulators do not have access to device secure enclaves.
 
-Let's start by understanding how MPC eliminates the fundamental vulnerability in traditional key storage.
+The next lesson examines how MPC eliminates the fundamental vulnerability in traditional key storage.

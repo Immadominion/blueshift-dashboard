@@ -4,9 +4,9 @@ import { ArticleSection } from "../../../../components/ArticleSection/ArticleSec
 
 ![MWA Protocol](/graphics/course-banners/mobile-wallet-adapter.png)
 
-The Mobile Wallet Adapter specification is one of the most elegant solutions in the Solana ecosystem. Understanding how it works under the hood will make you a better mobile developer, and help you debug the weird edge cases you'll inevitably encounter.
+The Mobile Wallet Adapter specification is one of the most elegant solutions in the Solana ecosystem. Understanding how it works under the hood will enable you to diagnose connection failures, session timeouts, and wallet version mismatches in minutes instead of hours.
 
-Most developers never read protocol specs. They call `transact()`, it works, and they move on. But when a connection silently fails, when authorization times out, when a wallet doesn't respond, you need to understand the machinery.
+The `transact()` function abstracts complex protocol machinery. When connections silently fail, when authorization times out, when wallets don't respond—understanding what happens inside that abstraction means the difference between hours of debugging and immediate diagnosis.
 
 > MWA establishes encrypted peer-to-peer channels using WebSockets, ECDH key exchange, and AES-GCM encryption. No plaintext ever crosses the wire, even on localhost.
 
@@ -26,7 +26,7 @@ When your dApp connects to a wallet, two apps on the same device establish a Web
 
 Your dApp is always the client. The wallet app is always the server. This asymmetry is fundamental to the protocol.
 
-But here's what makes MWA clever: the wallet app doesn't run a WebSocket server all the time. That would drain battery and create security risks. Instead, the wallet only starts its server when your app explicitly requests a connection.
+MWA's efficiency comes from on-demand server initialization. The wallet app doesn't run a WebSocket server continuously, which would drain battery and create security risks. Instead, the wallet starts its server only when your app explicitly requests a connection.
 
 <ArticleSection name="Association: Finding the Wallet" id="association" level="h2" />
 
@@ -306,7 +306,7 @@ For remote sessions (desktop to mobile via QR code), the connection goes through
 
 <ArticleSection name="Error Codes" id="error-codes" level="h2" />
 
-MWA uses JSON-RPC error codes. Knowing these helps you write better error handling:
+MWA uses JSON-RPC error codes. Knowing these enables you to distinguish user cancellations (don't retry) from network failures (retry with exponential backoff):
 
 | Code | Name | Meaning |
 |------|------|---------|
@@ -383,4 +383,4 @@ For the complete protocol specification, see the official [MWA 2.0 Specification
 
 The specification was designed by [Solana Mobile](https://solanamobile.com) and is implemented by major wallets including Phantom and Solflare.
 
-Now that you understand the protocol, let's set up a React Native project to use it.
+MWA's architecture demonstrates how security requirements shape entire protocol designs. The ECDH handshake, ephemeral session keys, and sequence-numbered encryption aren't arbitrary complexity—they're the minimum viable security model for untrusted local communication. This same pattern appears throughout blockchain infrastructure: when you can't trust the transport layer, you build trust into the protocol itself. Understanding this principle makes you better at evaluating any decentralized system's security claims.

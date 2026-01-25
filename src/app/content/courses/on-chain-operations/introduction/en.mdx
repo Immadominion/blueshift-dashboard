@@ -1,81 +1,43 @@
----
-title: "Introduction to On-Chain Operations"
-description: "Master the fundamentals of interacting with the Solana blockchain from mobile applications, from RPC connections to NFTs and Blinks."
----
-
 import { ArticleSection } from "../../../../../components/ArticleSection/ArticleSection";
 
-<ArticleSection name="Overview" id="overview" level="h2" />
+# Introduction to On-Chain Operations
 
-Building mobile apps that interact with Solana goes far beyond connecting wallets. Your users want to transfer tokens, mint NFTs, execute swaps, and interact with programs, all from their phones. This course teaches you how to build these features with mobile-first considerations.
+A user initiates a token transfer. The network drops mid-request. The transaction may have succeeded, failed, or still be processing. Your app must handle this ambiguity without confusing the user or double-spending.
+
+Desktop developers assume stable connections. Mobile cannot. Networks drop. Batteries die. Small screens prevent displaying full transaction details. These constraints demand different architectures: retry logic that doesn't duplicate operations, caching strategies that preserve battery life, and UI that presents complex blockchain state clearly on limited screens.
+
+This course covers on-chain operations—token transfers, NFT handling, program interaction—with mobile constraints as first-class concerns. Every pattern accounts for unreliable networks, battery constraints, and limited screen space.
 
 <ArticleSection name="What You'll Learn" id="what-youll-learn" level="h2" />
 
-### RPC Fundamentals
+Mobile RPC differs from web RPC in three critical ways. Connections drop mid-request, requiring retry logic and offline state handling. Constant polling drains batteries—websockets and smart caching reduce network activity while keeping data fresh. Small screens can't display transaction details like desktop block explorers, demanding careful information hierarchy. You'll set up reliable connections on unreliable networks, implement battery-efficient caching strategies, and choose RPC providers optimized for production mobile apps.
 
-Understanding how your mobile app communicates with Solana is foundational. You'll learn:
+SPL tokens power Solana DeFi. You'll fetch token balances with proper caching, build transfer flows with mobile-optimized UX, manage Associated Token Accounts automatically, and display metadata from various token standards. Every operation accounts for mobile constraints: small screens, intermittent connectivity, and battery life.
 
-- How mobile RPC differs from web RPC
-- Setting up reliable connections on unreliable networks
-- Caching strategies to minimize requests and save battery
-- Choosing the right RPC providers for production
+NFT operations require special handling for media, metadata, and collections. You'll fetch NFT collections efficiently without overwhelming mobile memory, display NFT media (images, video, 3D models) with proper loading states, implement transfer and burn operations with clear user feedback, and work with Metaplex standards for both Token Metadata and Core.
 
-### Token Operations
+Solana Actions and Blinks bring blockchain interactions to any surface—social media posts, QR codes, or messaging apps. This course covers understanding the Actions specification, building mobile-native Action clients, rendering Blinks in your app with proper security warnings, and evaluating security considerations for external Actions before executing them.
 
-SPL tokens are the lifeblood of Solana DeFi. You'll build:
-
-- Token balance fetching with proper caching
-- Transfer flows with mobile-optimized UX
-- Associated Token Account management
-- Metadata display from various token standards
-
-### NFT Operations
-
-NFTs require special handling for media, metadata, and collections:
-
-- Fetching NFT collections efficiently
-- Displaying NFT media (images, video, 3D) on mobile
-- Transfer and burn operations
-- Working with Metaplex standards
-
-### Blinks and Actions
-
-Solana Actions and Blinks bring blockchain interactions to any surface:
-
-- Understanding the Actions specification
-- Building mobile-native Action clients
-- Rendering Blinks in your app
-- Security considerations for external Actions
-
-### Program Interaction
-
-Direct program interaction gives you full control:
-
-- Building and signing arbitrary instructions
-- Working with Anchor IDLs on mobile
-- Transaction simulation for better UX
-- Error handling and retry strategies
+Direct program interaction gives you full control over on-chain operations. This course covers building and signing arbitrary instructions for custom programs, working with Anchor IDLs on mobile to generate type-safe instructions, using transaction simulation to prevent failed transactions by showing users exact state changes before they sign, and implementing error handling with retry strategies that survive poor network conditions.
 
 <ArticleSection name="Prerequisites" id="prerequisites" level="h2" />
 
-Before starting this course, you should have completed:
+Before starting this course, you should have:
 
-1. **Mobile Wallet Adapter** - Understanding MWA connection and authorization flows
-2. **MWA Deep Dive** - Familiarity with transaction signing and session management
+1. **Completed Course 1 (Mobile Wallet Adapter)** or **Course 2 (Embedded Wallets)** - Understanding wallet connections and transaction signing
+2. **Experience with `@solana/web3.js`** (or willingness to learn from code examples)
 
-If you haven't completed those courses, we recommend starting there first.
+Whether you connected via MWA (Course 1) or embedded wallets (Course 2), the on-chain operations in this course work identically. Transaction building uses the same `@solana/web3.js` APIs regardless of wallet type. Only the signing mechanism differs—MWA's `wallet.signAndSendTransactions()` or embedded wallet provider methods. The RPC calls, instruction building, and account fetching remain consistent across both approaches.
+
+Course 4 (MWA Deep Dive) is optional and helps debug connection issues, but the concepts here focus on what happens *after* wallet authorization.
 
 <ArticleSection name="Mobile-First Mindset" id="mobile-first" level="h2" />
 
-Every lesson in this course considers mobile constraints:
+Every lesson in this course considers mobile constraints that don't exist on desktop.
 
-**Network Reliability**: Mobile connections drop. Your app needs to handle partial completions, retries, and offline states gracefully.
+Mobile connections drop mid-request, requiring retry logic and offline state handling. Constant RPC polling drains batteries; websockets and smart caching reduce network activity while keeping data fresh. Small screens can't display transaction details like desktop block explorers, demanding careful information hierarchy.
 
-**Battery Life**: Constant polling drains batteries. We'll use websockets, webhooks, and smart caching instead.
-
-**Screen Real Estate**: Complex transaction details need thoughtful presentation on small screens.
-
-**User Patience**: Mobile users expect instant feedback. We'll use optimistic updates and clear loading states.
+Users expect instant feedback. Optimistic updates, clear loading states, and transaction status tracking prevent the perception of slowness even when network latency is unavoidable.
 
 <ArticleSection name="Development Setup" id="development-setup" level="h2" />
 
@@ -100,6 +62,4 @@ Each lesson builds on the previous:
 
 By the end, you'll have the skills to build feature-rich mobile dApps that interact with any Solana program.
 
-<ArticleSection name="Let's Begin" id="lets-begin" level="h2" />
-
-Start with **RPC Fundamentals** to understand how your mobile app communicates with the Solana network. This foundation will support everything else you build.
+Start with RPC Fundamentals to understand how your mobile app communicates with the Solana network. This foundation supports everything else you build.

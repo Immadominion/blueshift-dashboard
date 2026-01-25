@@ -1,9 +1,6 @@
----
-title: "Token Operations"
-description: "Build mobile token functionality: transfers, token accounts, and SPL token integration with wallet signing."
----
-
 import { ArticleSection } from "../../../../../components/ArticleSection/ArticleSection";
+
+# Token Operations
 
 <ArticleSection name="Tokens on Solana" id="tokens-on-solana" level="h2" />
 
@@ -34,8 +31,10 @@ The library provides instructions for all token operations. On mobile, you'll ty
 
 1. Build the instruction
 2. Create a transaction
-3. Sign with MWA
+3. Sign with your wallet (MWA's `wallet.signAndSendTransactions()` or embedded wallet provider methods)
 4. Send and confirm
+
+The instruction building and transaction construction code is identical across wallet types. Only step 3 varies based on whether you use Mobile Wallet Adapter or embedded wallets.
 
 ```typescript
 import {
@@ -404,12 +403,6 @@ try {
 }
 ```
 
-<ArticleSection name="Key Takeaways" id="key-takeaways" level="h2" />
+Token operations on mobile require more care than desktop. Every transfer might create a token account, costing SOL the user didn't expect to pay. Decimal precision errors compound across transactions, making precise math non-negotiable. The Token-2022 program introduces extension-specific logic that breaks assumptions from the original Token Program.
 
-- **Token Account model**: Users need ATAs to hold tokens. Check if they exist before transfers.
-- **Decimals matter**: USDC is 6 decimals, SOL is 9. Always convert properly.
-- **ATA creation costs SOL**: Factor this into UX when sending to new recipients.
-- **Check the token program**: Token-2022 mints need the right program ID.
-- **Show progress**: Token operations have multiple steps; keep users informed.
-
-Next, we'll build on these patterns to handle NFTs: tokens with supply of 1 and rich metadata.
+These patterns—checking for token accounts before building transactions, handling program IDs correctly, showing multi-step progress—separate mobile token apps that feel professional from those that frustrate users with unexpected failures.
