@@ -2,7 +2,7 @@
 
 import { ChallengeMetadata } from "@/app/utils/challenges";
 import { CourseMetadata } from "@/app/utils/course";
-import { Icon, Button, CrosshairCorners } from "@blueshift-gg/ui-components";
+import { Icon, Button } from "@blueshift-gg/ui-components";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { usePathContent } from "@/app/hooks/usePathContent";
